@@ -1,0 +1,573 @@
+#ifndef SCRIPTABLE_OBJ_HELPER_H
+#error scriptable object helper header was not included.
+#endif
+
+#ifdef SCRIPTABLE_OBJ_HELPER_CPP
+#error This file must not be included more than once. Please read SSS integration documentation for help.
+#endif
+#define SCRIPTABLE_OBJ_HELPER_CPP
+
+
+// Membres publics de la classe scriptable.
+// Ce bloc doit etre present dans la classe
+
+#undef OBJECT_PROPERTIES
+#define OBJECT_PROPERTIES CLASSNAME* CLASSNAME::JOIN(_sNew_,CLASSNAME)(ScriptVariable& retVal, Context& params) { \
+	State* state = dynamic_cast<State*>(params.getobj("state")); \
+	AuroraEngine* aurora_engine = state->engine(); \
+	(void) aurora_engine;
+
+#undef PROPERTY_FILE
+#define PROPERTY_FILE(propertyName) ScriptVariable* _ ## propertyName ## _var = params.getVar(#propertyName); \
+	VFS::File* propertyName = (_ ## propertyName ## _var) ? (_ ## propertyName ## _var)->getfile(state->source()) : NULL;
+
+#undef PROPERTY_CHAR
+#define PROPERTY_CHAR(propertyName) char* propertyName = params.getstr(#propertyName);
+
+#undef PROPERTY_XML
+#define PROPERTY_XML(propertyName) TiXmlNode* propertyName = NULL; // TODO : implement XML in the script engine
+
+#undef PROPERTY_INT
+#define PROPERTY_INT(propertyName) int propertyName = params.getint(#propertyName);
+
+#undef PROPERTY_INT_PERCENT
+#define PROPERTY_INT_PERCENT(propertyName) int propertyName = params.getintPercent(#propertyName);
+
+#undef PROPERTY_COORD
+#define PROPERTY_COORD(propertyName) coord propertyName = params.getcoord(#propertyName);
+
+#undef PROPERTY_DUR
+#define PROPERTY_DUR(propertyName) dur propertyName = params.getdur(#propertyName);
+
+#undef PROPERTY_BOOL
+#define PROPERTY_BOOL(propertyName) bool propertyName = params.getbool(#propertyName);
+
+#undef PROPERTY_POINT
+#define PROPERTY_POINT(propertyName) Point propertyName(params.getPoint(#propertyName));
+
+#undef PROPERTY_POINT_PERCENT
+#define PROPERTY_POINT_PERCENT(propertyName) Point propertyName(params.getPointPercent(#propertyName));
+
+#undef PROPERTY_RECT
+#define PROPERTY_RECT(propertyName) Rect propertyName(params.getRect(#propertyName));
+
+#undef PROPERTY_EFFECTS
+#define PROPERTY_EFFECTS(propertyName) GraphicalEffects* propertyName = NULL; \
+	Renderable* _s_ ## propertyName ## _effects_template = dynamic_cast<Renderable*>(params.getobj(#propertyName)); \
+	if(_s_ ## propertyName ## _effects_template) { \
+		propertyName = new GraphicalEffects(*(_s_ ## propertyName ## _effects_template->getObjectGraphicalEffects())); \
+	}
+
+#undef PROPERTY_INTERPOLATIONS
+#define PROPERTY_INTERPOLATIONS(propertyName) InterpolationDescriptor* propertyName = NULL; // TODO : Cannot pass interpolations with script constructors.
+
+#undef PROPERTY_OBJ
+#define PROPERTY_OBJ(subObjClass, propertyName) subObjClass* propertyName = dynamic_cast<subObjClass*>(params.getobj(#propertyName));
+
+#undef PROPERTY_MOLD
+#define PROPERTY_MOLD(propertyName) ObjectMold* propertyName = dynamic_cast<ObjectMold*>(params.getobj(#propertyName));
+
+#undef PROPERTY_BITMASK
+#define PROPERTY_BITMASK(propertyName, defaultValue) int propertyName = params.getint(#propertyName);
+
+
+#undef FACTORY_CONSTRUCTOR
+#define FACTORY_CONSTRUCTOR(constructorParams) CLASSNAME* retObj = new CLASSNAME constructorParams; \
+	retVal.setval(retObj);
+
+#undef END_OBJECT_PROPERTIES
+#define END_OBJECT_PROPERTIES return retObj; }
+
+
+#define HEADER_FILE HEADER_TO_FILENAME(HEADER,xh)
+#include HEADER_FILE
+#undef HEADER_FILE
+
+#undef OBJECT_PROPERTIES
+#define OBJECT_PROPERTIES \
+	CLASSNAME::Mold* CLASSNAME::Mold::copy() { Mold* newMold = AOENEW Mold(engine());
+
+#undef PROPERTY_FILE
+#define PROPERTY_FILE(propertyName) newMold->propertyName = this->propertyName ? this->propertyName->copy() : NULL;
+
+#undef PROPERTY_CHAR
+#define PROPERTY_CHAR(propertyName) newMold->propertyName = this->propertyName ? AOESTRDUP(this->propertyName) : NULL;
+
+#undef PROPERTY_XML
+#define PROPERTY_XML(propertyName) newMold->propertyName = this->propertyName ? this->propertyName->Clone() : NULL;
+
+#undef PROPERTY_INT
+#define PROPERTY_INT(propertyName) newMold->propertyName = this->propertyName;
+
+#undef PROPERTY_INT_PERCENT
+#define PROPERTY_INT_PERCENT(propertyName) newMold->propertyName = this->propertyName;
+
+#undef PROPERTY_BOOL
+#define PROPERTY_BOOL(propertyName) newMold->propertyName = this->propertyName;
+
+#undef PROPERTY_POINT
+#define PROPERTY_POINT(propertyName) newMold->propertyName = this->propertyName;
+
+#undef PROPERTY_POINT_PERCENT
+#define PROPERTY_POINT_PERCENT(propertyName) newMold->propertyName = this->propertyName;
+
+#undef PROPERTY_COORD
+#define PROPERTY_COORD(propertyName) newMold->propertyName = this->propertyName;
+
+#undef PROPERTY_DUR
+#define PROPERTY_DUR(propertyName) newMold->propertyName = this->propertyName;
+
+#undef PROPERTY_RECT
+#define PROPERTY_RECT(propertyName) newMold->propertyName = this->propertyName;
+
+#undef PROPERTY_EFFECTS
+#define PROPERTY_EFFECTS(propertyName) newMold->propertyName = AOENEW GraphicalEffects(*this->propertyName);
+
+#undef PROPERTY_INTERPOLATIONS
+#define PROPERTY_INTERPOLATIONS(propertyName) newMold->propertyName = this->propertyName ? AOESTRDUP(this->propertyName) : NULL;
+
+#undef PROPERTY_OBJ
+#define PROPERTY_OBJ(subObjClass, propertyName) newMold->propertyName ## Mold = this->propertyName ## Mold ? this->propertyName ## Mold->copy() : NULL;
+
+#undef PROPERTY_MOLD
+#define PROPERTY_MOLD(propertyName) newMold->propertyName = this->propertyName ? this->propertyName->copy() : NULL;
+
+#undef PROPERTY_BITMASK
+#define PROPERTY_BITMASK(propertyName, defaultValue) newMold->propertyName = this->propertyName;
+
+
+#undef FACTORY_CONSTRUCTOR
+#define FACTORY_CONSTRUCTOR(constructorParams)
+
+
+#undef COLLECTION
+#define COLLECTION(propertyName, subObjClass, addFunction) for(std::list<ObjectMold*>::iterator i=propertyName.begin(); i!=propertyName.end(); i++) { assert(*i); newMold->propertyName.push_back((*i)->copy()); }
+
+#undef MAP
+#define MAP(propertyName, subObjClass, addFunction) for(std::map<char*,ObjectMold*>::iterator i=propertyName.begin(); i!=propertyName.end(); i++) { assert(i->second); newMold->propertyName[AOESTRDUP(i->first)] = i->second->copy(); }
+
+
+#undef MOLDMAP
+#define MOLDMAP(propertyName, addFunction) for(std::map<char*,ObjectMold*>::iterator i=propertyName.begin(); i!=propertyName.end(); i++) { assert(i->second); newMold->propertyName[AOESTRDUP(i->first)] = i->second->copy(); }
+
+
+#undef INTMAP
+#define INTMAP(propertyName, subObjClass, addFunction) for(std::map<char*,int>::iterator i=propertyName.begin(); i!=propertyName.end(); i++) { newMold->propertyName[AOESTRDUP(i->first)] = i->second; }
+
+
+#undef CHARMAP
+#define CHARMAP(propertyName, subObjClass, addFunction) for(std::map<char*,char*>::iterator i=propertyName.begin(); i!=propertyName.end(); i++) { newMold->propertyName[AOESTRDUP(i->first)] = AOESTRDUP(i->second); }
+
+
+#undef XMLTAGLIST
+#define XMLTAGLIST(propertyName, addFunction) for(std::list<TiXmlElement*>::iterator i=propertyName.begin(); i!=propertyName.end(); i++) { assert(*i); newMold->propertyName.push_back((*i)->Clone()->ToElement()); }
+
+
+#undef END_OBJECT_PROPERTIES
+#define END_OBJECT_PROPERTIES return newMold; }
+
+
+#define HEADER_FILE HEADER_TO_FILENAME(HEADER,xh)
+#include HEADER_FILE
+#undef HEADER_FILE
+
+
+#undef OBJECT_PROPERTIES
+#define OBJECT_PROPERTIES \
+	::ScriptableObject* CLASSNAME::Mold::createInstance(State* state, ownedset* owned) { \
+        AuroraEngine* aurora_engine = state->engine(); (void) aurora_engine; \
+        if(!state) { \
+				        syslog("WARNING: Creating an object from a mold without attached state."); \
+        } \
+        if(objectId) { \
+                ScriptableObject* obj = state->script()->getobj(objectId); \
+								if(obj) return obj; \
+        }
+
+#undef PROPERTY_FILE
+#define PROPERTY_FILE(propertyName)
+
+#undef PROPERTY_CHAR
+#define PROPERTY_CHAR(propertyName)
+
+#undef PROPERTY_XML
+#define PROPERTY_XML(propertyName)
+
+#undef PROPERTY_INT
+#define PROPERTY_INT(propertyName)
+
+#undef PROPERTY_INT_PERCENT
+#define PROPERTY_INT_PERCENT(propertyName)
+
+#undef PROPERTY_BOOL
+#define PROPERTY_BOOL(propertyName)
+
+#undef PROPERTY_POINT
+#define PROPERTY_POINT(propertyName)
+
+#undef PROPERTY_POINT_PERCENT
+#define PROPERTY_POINT_PERCENT(propertyName)
+
+#undef PROPERTY_COORD
+#define PROPERTY_COORD(propertyName)
+
+#undef PROPERTY_DUR
+#define PROPERTY_DUR(propertyName)
+
+#undef PROPERTY_RECT
+#define PROPERTY_RECT(propertyName)
+
+#undef PROPERTY_EFFECTS
+#define PROPERTY_EFFECTS(propertyName)
+
+#undef PROPERTY_INTERPOLATIONS
+#define PROPERTY_INTERPOLATIONS(propertyName)
+
+#undef PROPERTY_OBJ
+#define PROPERTY_OBJ(subObjClass, propertyName) subObjClass* propertyName = (propertyName ## Mold)?(dynamic_cast<subObjClass*>(propertyName ## Mold->createInstance(state, owned))):NULL; \
+	if(propertyName) { AOEObject::addOwnedObject(owned, propertyName); }
+
+#undef PROPERTY_MOLD
+#define PROPERTY_MOLD(propertyName) ObjectMold* propertyName = this->propertyName ? this->propertyName->copy() : NULL;
+
+#undef PROPERTY_BITMASK
+#define PROPERTY_BITMASK(propertyName, defaultValue)
+
+
+#undef FACTORY_CONSTRUCTOR
+#define FACTORY_CONSTRUCTOR(constructorParams) ::CLASSNAME* JOIN(CLASSNAME,Instance) = AOENEW ::CLASSNAME constructorParams; \
+	JOIN(CLASSNAME,Instance)->sourceFile = source()?source()->copy():NULL; \
+	if(objectId) { state->script()->setval(objectId, JOIN(CLASSNAME,Instance)); } \
+	SubScriptable* sslo = dynamic_cast<SubScriptable*>(JOIN(CLASSNAME,Instance)); if(sslo) { sslo->initScript(); }
+
+
+#undef COLLECTION
+#define COLLECTION(propertyName, subObjClass, addFunction) for(std::list<ObjectMold*>::iterator i=propertyName.begin(); i!=propertyName.end(); i++) { assert(*i); ScriptableObject* instance = (*i)->createInstance(state, owned); JOIN(CLASSNAME,Instance)->addFunction(dynamic_cast<subObjClass*>(instance)); AOEObject::addOwnedObject(owned, instance); }
+
+#undef MAP
+#define MAP(propertyName, subObjClass, addFunction) for(std::map<char*,ObjectMold*>::iterator i=propertyName.begin(); i!=propertyName.end(); i++) { assert(i->second); ScriptableObject* instance = (i->second)->createInstance(state, owned); JOIN(CLASSNAME,Instance)->addFunction((i->first),dynamic_cast<subObjClass*>(instance)); AOEObject::addOwnedObject(owned, instance); }
+
+
+#undef MOLDMAP
+#define MOLDMAP(propertyName, addFunction) for(std::map<char*,ObjectMold*>::iterator i=propertyName.begin(); i!=propertyName.end(); i++) { assert(i->second); JOIN(CLASSNAME,Instance)->addFunction((i->first),(i->second->copy())); }
+
+
+#undef INTMAP
+#define INTMAP(propertyName, subObjClass, addFunction) for(std::map<char*,int>::iterator i=propertyName.begin(); i!=propertyName.end(); i++) { JOIN(CLASSNAME,Instance)->addFunction((i->first),(i->second)); }
+
+
+#undef CHARMAP
+#define CHARMAP(propertyName, subObjClass, addFunction) for(std::map<char*,char*>::iterator i=propertyName.begin(); i!=propertyName.end(); i++) { JOIN(CLASSNAME,Instance)->addFunction((i->first),(i->second)); }
+
+
+#undef XMLTAGLIST
+#define XMLTAGLIST(propertyName, addFunction) for(std::list<TiXmlElement*>::iterator i=propertyName.begin(); i!=propertyName.end(); i++) { assert(*i); JOIN(CLASSNAME,Instance)->addFunction(*i); }
+
+
+#undef END_OBJECT_PROPERTIES
+#define END_OBJECT_PROPERTIES return JOIN(CLASSNAME,Instance); }
+
+#undef SCRIPTABLE_PUBLIC_MEMBERS
+#ifdef KEEP_AOD_SOURCES
+#define SCRIPTABLE_PUBLIC_MEMBERS \
+	const char* CLASSNAME::getClassName() { return STRINGIFY(CLASSNAME); } \
+	void CLASSNAME::_s_sizeOf(ScriptableObject* me, ScriptVariable& retVal, Context& params) { retVal.setval( (int)me->sizeOf() ); } \
+	void CLASSNAME::_s_isInstance(ScriptableObject* me, ScriptVariable& retVal, Context& params) { retVal.setval( me->isInstance(params.getstr("classname")) ); } \
+	void CLASSNAME::_s_getClassName(ScriptableObject* me, ScriptVariable& retVal, Context& params) { retVal.setval( me->getClassName() ); } \
+	void CLASSNAME::_s_own(ScriptableObject* me, ScriptVariable& retVal, Context& params) { me->own(params.getobj("owned")); } \
+	void CLASSNAME::_s_source(ScriptableObject* me, ScriptVariable& retVal, Context& params) { retVal.setval( new VfsFile(me->engine(), me->source()) ); } \
+	void CLASSNAME::_s_aod(ScriptableObject* me, ScriptVariable& retVal, Context& params) { retVal.setval(me->aod()); }
+#else
+#define SCRIPTABLE_PUBLIC_MEMBERS \
+	const char* CLASSNAME::getClassName() { return STRINGIFY(CLASSNAME); } \
+	void CLASSNAME::_s_sizeOf(ScriptableObject* me, ScriptVariable& retVal, Context& params) { retVal.setval( (int)me->sizeOf() ); } \
+	void CLASSNAME::_s_isInstance(ScriptableObject* me, ScriptVariable& retVal, Context& params) { retVal.setval( me->isInstance(params.getstr("classname")) ); } \
+	void CLASSNAME::_s_getClassName(ScriptableObject* me, ScriptVariable& retVal, Context& params) { retVal.setval( me->getClassName() ); } \
+	void CLASSNAME::_s_own(ScriptableObject* me, ScriptVariable& retVal, Context& params) { me->own(params.getobj("owned")); } \
+	void CLASSNAME::_s_source(ScriptableObject* me, ScriptVariable& retVal, Context& params) { retVal.setval( new VfsFile(me->engine(), me->source()) ); }
+#endif
+
+
+#undef REGISTER_FUNCTIONS
+#ifdef KEEP_AOD_SOURCES
+#define REGISTER_FUNCTIONS SCRIPTABLE_PUBLIC_MEMBERS \
+	void CLASSNAME::registerFunctions(Context& c) { \
+		c.register_function(reinterpret_cast<void*>(&_s_sizeOf), getClassName(), "sizeOf", "()", FCTFLAG_NORMAL, NULL); \
+		c.register_function(reinterpret_cast<void*>(&_s_isInstance), getClassName(), "isInstance", "(classname)", FCTFLAG_NORMAL, NULL); \
+		c.register_function(reinterpret_cast<void*>(&_s_getClassName), getClassName(), "getClassName", "()", FCTFLAG_NORMAL, NULL); \
+		c.register_function(reinterpret_cast<void*>(&_s_own), getClassName(), "own", "(owned)", FCTFLAG_NORMAL, NULL); \
+		c.register_function(reinterpret_cast<void*>(&_s_source), getClassName(), "source", "()", FCTFLAG_NORMAL, NULL); \
+		c.register_function(reinterpret_cast<void*>(&_s_aod), getClassName(), "aod", "()", FCTFLAG_NORMAL, NULL);
+#else
+#define REGISTER_FUNCTIONS SCRIPTABLE_PUBLIC_MEMBERS \
+	void CLASSNAME::registerFunctions(Context& c) { \
+		c.register_function(reinterpret_cast<void*>(&_s_sizeOf), getClassName(), "sizeOf", "()", FCTFLAG_NORMAL, NULL); \
+		c.register_function(reinterpret_cast<void*>(&_s_isInstance), getClassName(), "isInstance", "(classname)", FCTFLAG_NORMAL, NULL); \
+		c.register_function(reinterpret_cast<void*>(&_s_getClassName), getClassName(), "getClassName", "()", FCTFLAG_NORMAL, NULL); \
+		c.register_function(reinterpret_cast<void*>(&_s_own), getClassName(), "own", "(owned)", FCTFLAG_NORMAL, NULL); \
+		c.register_function(reinterpret_cast<void*>(&_s_source), getClassName(), "source", "()", FCTFLAG_NORMAL, NULL);
+#endif
+
+
+#define HEADER_FILE HEADER_TO_FILENAME(HEADER,xh)
+#include HEADER_FILE
+#undef HEADER_FILE
+
+
+#undef OBJECT_PROPERTIES
+#define OBJECT_PROPERTIES
+
+#undef PROPERTY_FILE
+#define PROPERTY_FILE(propertyName)
+
+#undef PROPERTY_CHAR
+#define PROPERTY_CHAR(propertyName)
+
+#undef PROPERTY_XML
+#define PROPERTY_XML(propertyName)
+
+#undef PROPERTY_INT
+#define PROPERTY_INT(propertyName)
+
+#undef PROPERTY_INT_PERCENT
+#define PROPERTY_INT_PERCENT(propertyName)
+
+#undef PROPERTY_BOOL
+#define PROPERTY_BOOL(propertyName)
+
+#undef PROPERTY_POINT
+#define PROPERTY_POINT(propertyName)
+
+#undef PROPERTY_POINT_PERCENT
+#define PROPERTY_POINT_PERCENT(propertyName)
+
+#undef PROPERTY_COORD
+#define PROPERTY_COORD(propertyName)
+
+#undef PROPERTY_DUR
+#define PROPERTY_DUR(propertyName)
+
+#undef PROPERTY_RECT
+#define PROPERTY_RECT(propertyName)
+
+#undef PROPERTY_EFFECTS
+#define PROPERTY_EFFECTS(propertyName)
+
+#undef PROPERTY_INTERPOLATIONS
+#define PROPERTY_INTERPOLATIONS(propertyName)
+
+#undef PROPERTY_OBJ
+#define PROPERTY_OBJ(subObjClass, propertyName)
+
+#undef PROPERTY_MOLD
+#define PROPERTY_MOLD(propertyName)
+
+#undef PROPERTY_BITMASK
+#define PROPERTY_BITMASK(propertyName, defaultValue)
+
+#undef FACTORY_CONSTRUCTOR
+#define FACTORY_CONSTRUCTOR(constructorParams) c.register_function((char*) &JOIN(_sNew_,CLASSNAME), getClassName(), STRINGIFY(CLASSNAME), #constructorParams, FCTFLAG_STATIC, NULL);
+
+#undef COLLECTION
+#define COLLECTION(propertyName, subObjClass, addFunction)
+
+#undef MAP
+#define MAP(propertyName, subObjClass, addFunction)
+
+#undef MOLDMAP
+#define MOLDMAP(propertyName, addFunction)
+
+#undef INTMAP
+#define INTMAP(propertyName, subObjClass, addFunction)
+
+#undef CHARMAP
+#define CHARMAP(propertyName, subObjClass, addFunction)
+
+#undef XMLTAGLIST
+#define XMLTAGLIST(propertyName, addFunction)
+
+
+#undef END_OBJECT_PROPERTIES
+#define END_OBJECT_PROPERTIES
+
+#undef SCRIPTABLE_PUBLIC_MEMBERS
+#define SCRIPTABLE_PUBLIC_MEMBERS
+
+#undef REGISTER_FUNCTIONS
+#define REGISTER_FUNCTIONS
+
+#undef REGISTER_SUPERCLASS
+#define REGISTER_SUPERCLASS(superclass) superclass::registerFunctions(c);
+
+// Macro pour enregistrer une fonction scriptable dans une variable.
+#undef REGISTER_FUNCTION
+#define REGISTER_FUNCTION(f, p)          c.register_function((char*) &_s_ ## f, getClassName(), #f, #p, FCTFLAG_NORMAL, NULL);
+
+#undef REGISTER_BLOCKING_FUNCTION
+#define REGISTER_BLOCKING_FUNCTION(f, p) c.register_function((char*) &_s_ ## f, getClassName(), #f, #p, FCTFLAG_BLOCKING, (char*) &_s_ ## f ## _block);
+
+#undef REGISTER_WAIT_FUNCTION
+#define REGISTER_WAIT_FUNCTION(f, p) c.register_function((char*) &_s_ ## f, getClassName(), #f, #p, FCTFLAG_BLOCKING, (char*) &_s_ ## f ## _block);
+
+#undef REGISTER_STATIC_FUNCTION
+#define REGISTER_STATIC_FUNCTION(f, p)          c.register_function((char*) &_s_ ## f, getClassName(), #f, #p, FCTFLAG_STATIC, NULL);
+
+#undef REGISTER_STATIC_BLOCKING_FUNCTION
+#define REGISTER_STATIC_BLOCKING_FUNCTION(f, p) c.register_function((char*) &_s_ ## f, getClassName(), #f, #p, FCTFLAG_STATIC | FCTFLAG_BLOCKING, (char*) &_s_ ## f ## _block);
+
+#undef REGISTER_STATIC_WAIT_FUNCTION
+#define REGISTER_STATIC_WAIT_FUNCTION(f, p) c.register_function((char*) &_s_ ## f, getClassName(), #f, #p, FCTFLAG_STATIC | FCTFLAG_BLOCKING, (char*) &_s_ ## f ## _block);
+
+#undef END_REGISTER_FUNCTIONS
+#define END_REGISTER_FUNCTIONS }
+
+// Macro qui definit une fonction comme scriptable
+#undef SCRIPTABLE_FUNCTION
+#define SCRIPTABLE_FUNCTION(name, fparams) void CLASSNAME::_s_ ## name(ScriptableObject* me, ScriptVariable& retVal, Context& params) { \
+	retVal.setval( (dynamic_cast<CLASSNAME*>(me))->name fparams ); }
+
+#undef SCRIPTABLE_FUNCTION_WAIT
+#define SCRIPTABLE_FUNCTION_WAIT(name, fparams) \
+	void CLASSNAME::_s_ ## name(ScriptableObject* me, ScriptVariable& retVal, Context& params) { retVal.reset(); (dynamic_cast<CLASSNAME*>(me))->name fparams; } \
+	bool CLASSNAME::_s_ ## name ## _block(ScriptableObject* me, Context& params) { return (dynamic_cast<CLASSNAME*>(me))->name fparams; }
+
+#undef SCRIPTABLE_FUNCTION_BLOCK
+#define SCRIPTABLE_FUNCTION_BLOCK(name, fparams) \
+	void CLASSNAME::_s_ ## name(ScriptableObject* me, ScriptVariable& retVal, Context& params) { retVal.reset(); (dynamic_cast<CLASSNAME*>(me))->name fparams; } \
+	bool CLASSNAME::_s_ ## name ## _block(ScriptableObject* me, Context& params) { return (dynamic_cast<CLASSNAME*>(me))->name ## _block fparams; }
+
+#undef SCRIPTABLE_FUNCTION_STR
+#define SCRIPTABLE_FUNCTION_STR(name, fparams) void CLASSNAME::_s_ ## name(ScriptableObject* me, ScriptVariable& retVal, Context& params) { \
+	char* ret = ( (dynamic_cast<CLASSNAME*>(me))->name fparams ); retVal.setval(ret); AOEFREE(ret); }
+
+#undef SCRIPTABLE_FUNCTION_VOID
+#define SCRIPTABLE_FUNCTION_VOID(name, fparams) void CLASSNAME::_s_ ## name(ScriptableObject* me, ScriptVariable& retVal, Context& params) { \
+	retVal.reset(); (dynamic_cast<CLASSNAME*>(me))->name fparams; }
+
+#undef SCRIPTABLE_FUNCTION_OBJ
+#define SCRIPTABLE_FUNCTION_OBJ(name, fparams) void CLASSNAME::_s_ ## name(ScriptableObject* me, ScriptVariable& retVal, Context& params) { \
+	retVal.setval( (ScriptableObject*) ( (dynamic_cast<CLASSNAME*>(me))->name fparams ) ); }
+
+#undef SCRIPTABLE_FUNCTION_TRANS
+#define SCRIPTABLE_FUNCTION_TRANS(name, fparams) void CLASSNAME::_s_ ## name(ScriptableObject* me, ScriptVariable& retVal, Context& params) { \
+	Translatable* t = (dynamic_cast<CLASSNAME*>(me))->name fparams ; \
+	retVal.setval( t->getX(), t->getY() ); }
+
+#undef SCRIPTABLE_FUNCTION_RESIZABLE
+#define SCRIPTABLE_FUNCTION_RESIZABLE(name, fparams) void CLASSNAME::_s_ ## name(ScriptableObject* me, ScriptVariable& retVal, Context& params) { \
+	Resizable* r = (dynamic_cast<CLASSNAME*>(me))->name fparams ; \
+	retVal.setval( r->getX(), r->getY(), r->getW(), r->getH() ); }
+
+#undef SCRIPTABLE_FUNCTION_FILE
+#define SCRIPTABLE_FUNCTION_FILE(name, fparams) void CLASSNAME::_s_ ## name(ScriptableObject* me, ScriptVariable& retVal, Context& params) { \
+	retVal.setval( new VfsFile( me->engine(), (dynamic_cast<CLASSNAME*>(me))->name fparams ) ); }
+
+#undef SCRIPTABLE_GLOBAL_FUNCTION
+#define SCRIPTABLE_GLOBAL_FUNCTION(name, fparams) void CLASSNAME::_s_ ## name(ScriptVariable& retVal, Context& params) { \
+	retVal.setval( name fparams ); }
+
+#undef SCRIPTABLE_GLOBAL_FUNCTION_WAIT
+#define SCRIPTABLE_GLOBAL_FUNCTION_WAIT(name, fparams) \
+	void CLASSNAME::_s_ ## name(ScriptVariable& retVal, Context& params) { retVal.reset(); name fparams; } \
+	bool CLASSNAME::_s_ ## name ## _block(Context& params) { return name fparams; }
+
+#undef SCRIPTABLE_GLOBAL_FUNCTION_BLOCK
+#define SCRIPTABLE_GLOBAL_FUNCTION_BLOCK(name, fparams) \
+	void CLASSNAME::_s_ ## name(ScriptVariable& retVal, Context& params) { retVal.reset(); name fparams; } \
+	bool CLASSNAME::_s_ ## name ## _block(Context& params) { return name ## _block fparams; }
+
+#undef SCRIPTABLE_GLOBAL_FUNCTION_STR
+#define SCRIPTABLE_GLOBAL_FUNCTION_STR(name, fparams) void CLASSNAME::_s_ ## name(ScriptVariable& retVal, Context& params) { \
+	char* ret = ( name fparams ); retVal.setval(ret); AOEFREE(ret); }
+
+#undef SCRIPTABLE_GLOBAL_FUNCTION_VOID
+#define SCRIPTABLE_GLOBAL_FUNCTION_VOID(name, fparams) void CLASSNAME::_s_ ## name(ScriptVariable& retVal, Context& params) { \
+	retVal.reset(); name fparams; }
+
+#undef SCRIPTABLE_GLOBAL_FUNCTION_OBJ
+#define SCRIPTABLE_GLOBAL_FUNCTION_OBJ(name, fparams) void CLASSNAME::_s_ ## name(ScriptVariable& retVal, Context& params) { \
+	retVal.setval( (ScriptableObject*) name fparams ); }
+
+#undef SCRIPTABLE_GLOBAL_FUNCTION_TRANS
+#define SCRIPTABLE_GLOBAL_FUNCTION_TRANS(name, fparams) void CLASSNAME::_s_ ## name(ScriptVariable& retVal, Context& params) { \
+	Translatable* t = name fparams ; \
+	retVal.setval( t->getX(), t->getY() ); }
+
+#undef SCRIPTABLE_GLOBAL_FUNCTION_RESIZABLE
+#define SCRIPTABLE_GLOBAL_FUNCTION_RESIZABLE(name, fparams) void CLASSNAME::_s_ ## name(ScriptVariable& retVal, Context& params) { \
+	Resizable* r = name fparams ; \
+	retVal.setval( r->getX(), r->getY(), r->getW(), r->getH() ); }
+
+// Macro instanceOf
+#undef INSTANCE_OF
+#define INSTANCE_OF \
+bool CLASSNAME::isInstance(const char* className) { \
+        return ( strcmp(className, STRINGIFY(CLASSNAME)) == 0)
+
+#undef SUPERCLASS
+#define SUPERCLASS(name) || name::isInstance(className)
+
+#undef END_INSTANCE_OF
+#define END_INSTANCE_OF || ScriptableObject::isInstance(className); }
+
+// Parametres de la fonction C++ :
+// Parametre entier
+#undef S_INT
+#define S_INT(v) params.getint(#v)
+// Parametre char*
+#undef S_STR
+#define S_STR(v) params.getstr(#v)
+// Parametre paire
+#undef S_PAIR
+#define S_PAIR(v) params.getPoint(#v)
+// Parametre rectangle
+#undef S_RECT
+#define S_RECT(v) params.getRect(#v)
+// Parametre translatable
+#undef S_TRANS_PTR
+#define S_TRANS_PTR(v) params.getTranslatable(#v)
+// Parametre coordonnee
+#undef S_COORD
+#define S_COORD(v) params.getcoord(#v)
+// Parametre duree
+#undef S_DUR
+#define S_DUR(v) params.getdur(#v)
+// Parametre booleen
+#undef S_BOOL
+#define S_BOOL(v) params.getbool(#v)
+// Parametre Contexte (table de hashage)
+#undef S_HTBL
+#define S_HTBL(v) params.gettable(#v)
+// Parametre pointeur vers objet
+#undef S_OBJ
+#define S_OBJ(v) params.getobj(#v)
+// Parametre pointeur vers objet de classe c
+#undef S_OBJ_CLASS
+#define S_OBJ_CLASS(v, c) (scriptable_object_cast<c*>(params.getobj(#v)))
+// Parametre pointeur vers mold
+#undef S_MOLD
+#define S_MOLD(v) (scriptable_object_cast<ObjectMold*>(params.getobj(#v)))
+// Parametre identifiant de signal
+#undef S_SIGNAL_ID
+#define S_SIGNAL_ID(v) ((SignalId)params.getint(#v))
+// Parametre structure
+#undef S_PACK
+#define S_PACK(v) params.getparams(#v), params.getdata(#v)
+// Parametre fichier
+#undef S_FILE
+#define S_FILE(v) (params.getVar(#v)->getfile(params.getobj("this")->source()))
+// Parametre table
+#undef S_TBL
+#define S_TBL(v) (params.getVar(#v)->gettable())
+// Parametre noeud XML
+#undef S_XML
+#define S_XML(v) (params.getVar(#v)->getxml())
+// Parametre pointeur vers int
+#undef S_PTR_INT
+#define S_PTR_INT(v) params.getintptr(#v)
+
+#define HEADER_FILE HEADER_TO_FILENAME(HEADER,xh)
+#include HEADER_FILE
+#undef HEADER_FILE
+#undef HEADER
+

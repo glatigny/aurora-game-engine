@@ -1,0 +1,30 @@
+/* This file is the signal table.
+   It associates a number to each possible signal.
+   This list must stay C-compatible and AOS-compatible at the same time.
+   The file will be compiled as part of an enum in C++ code and
+   as a boot-time script in AOS, so values stay synchronized.
+*/
+
+NULL_SIGNAL = 0,
+
+ACTION_BUTTON = 1,	// Player pressed the action button.
+
+DAMAGE = 2,		// The object received damage. The parameter indicates how much.
+
+CLICK = 3,		// The mouse clicked here. The paramter indicates the pressed button.
+RELEASE_CLICK = 4,	// The mouse has been released. The paramter indicates the pressed button.
+
+KEY_DOWN = 5,	// A key is down
+
+KEY_PRESSED = 6,	// A key has just been pressed
+
+MOUSE_MOVE = 7, // Mouse pointer moved
+
+PLAY = 8, // Play the element
+
+COLLISION = 9, // The element collided with another.
+
+LAST_SIGNAL		// Last signal, with no specific action.
+			// No comma at the end of this line to keep it
+			// enum-compatible.
+

@@ -1,0 +1,34 @@
+#define CLASSNAME EditLine
+
+OBJECT_PROPERTIES
+	PROPERTY_POINT(offset)
+	PROPERTY_EFFECTS(effects)
+	PROPERTY_INT(layer)
+	PROPERTY_CHAR(text)
+	PROPERTY_OBJ(Font, font)
+	PROPERTY_COORD(maxWidth)
+	PROPERTY_INT(overflowType)
+	PROPERTY_DUR(delay)
+	PROPERTY_DUR(maxTime)
+	PROPERTY_CHAR(transitionInterpolation)
+	FACTORY_CONSTRUCTOR((state, &offset, effects, layer, text, font, maxWidth, overflowType, delay, maxTime, transitionInterpolation))
+END_OBJECT_PROPERTIES
+
+SELF_REGISTRATION
+
+REGISTER_FUNCTIONS
+	REGISTER_SUPERCLASS(TextLine)
+
+	REGISTER_FUNCTION(enableInput, (controllerID))
+	REGISTER_FUNCTION(disableInput, ())
+	REGISTER_FUNCTION(setCursorPosition, (newPosition))
+
+END_REGISTER_FUNCTIONS
+
+INSTANCE_OF
+	SUPERCLASS(TextLine)
+END_INSTANCE_OF
+
+SCRIPTABLE_FUNCTION_VOID(enableInput, (S_INT(controllerID)) )
+SCRIPTABLE_FUNCTION_VOID(disableInput, () )
+SCRIPTABLE_FUNCTION_VOID(setCursorPosition, (S_INT(newPosition)) )

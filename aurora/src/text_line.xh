@@ -1,0 +1,41 @@
+#define CLASSNAME TextLine
+
+OBJECT_PROPERTIES
+	PROPERTY_POINT(offset)
+	PROPERTY_EFFECTS(effects)
+	PROPERTY_INT(layer)
+	PROPERTY_CHAR(text)
+	PROPERTY_OBJ(Font, font)
+	PROPERTY_COORD(maxWidth)
+	PROPERTY_INT(overflowType)
+	PROPERTY_DUR(delay)
+	PROPERTY_DUR(maxTime)
+	PROPERTY_CHAR(transitionInterpolation)
+FACTORY_CONSTRUCTOR((state, &offset, effects, layer, text, font, maxWidth, overflowType, delay, maxTime, transitionInterpolation))
+END_OBJECT_PROPERTIES
+
+SELF_REGISTRATION
+
+REGISTER_FUNCTIONS
+	REGISTER_SUPERCLASS(Renderable)
+
+	REGISTER_FUNCTION(getMaxWidth, () )
+	REGISTER_FUNCTION(getOverflowLength, () )
+	REGISTER_FUNCTION(getOverflowText, () )
+	REGISTER_FUNCTION(setMaxWidth, (newMaxWidth) )
+	REGISTER_FUNCTION(setText, (newText) )
+//	REGISTER_FUNCTION(getGlyphMetrics, (glyphIndex) )
+END_REGISTER_FUNCTIONS
+
+INSTANCE_OF
+	SUPERCLASS(Renderable)
+END_INSTANCE_OF
+
+SCRIPTABLE_FUNCTION(getMaxWidth, () )
+SCRIPTABLE_FUNCTION(getOverflowLength, () )
+SCRIPTABLE_FUNCTION(getOverflowText, () )
+SCRIPTABLE_FUNCTION_VOID(setMaxWidth, (S_INT(newMaxWidth)) )
+SCRIPTABLE_FUNCTION_VOID(setText, (S_STR(newText)) )
+// TODO : Implement Rect in the script engine
+//SCRIPTABLE_FUNCTION_RECT(getGlyphMetrics, (S_INT(glyphIndex)) )
+

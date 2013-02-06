@@ -1,0 +1,312 @@
+// Transforms xh into loader code
+
+
+#undef OBJECT_PROPERTIES
+#define OBJECT_PROPERTIES ScriptableObject* Factory::JOIN(load,CLASSNAME) (TiXmlElement* xmlData, VFS::File* xmlFile, ownedset* owned) { \
+	TiXmlElement* xmlFrames; \
+	xmlFrames = NULL; \
+	CLASSNAME* loadedObject = NULL; \
+	const char* aVal; (void)aVal; /* Attribute Value */ \
+	const char* aVal2; (void)aVal2; /* Attribute Value */ \
+
+
+#undef PROPERTY_FILE
+#define PROPERTY_FILE(propertyName) \
+ VFS::File* propertyName = VFS::openFile(xmlData->Attribute(#propertyName), xmlFile); \
+ std::auto_ptr<VFS::File> propertyName ## _container (propertyName); (void)propertyName ## _container;
+
+#undef PROPERTY_CHAR
+#define PROPERTY_CHAR(propertyName) const char* propertyName = xmlData->Attribute(#propertyName);
+
+
+#undef PROPERTY_XML
+#define PROPERTY_XML(propertyName) TiXmlNode* propertyName = xmlData->FirstChildElement(#propertyName);
+
+
+#undef PROPERTY_INT
+#define PROPERTY_INT(propertyName) aVal=xmlData->Attribute(#propertyName); int propertyName = atoi(aVal?aVal:"0");
+
+
+#undef PROPERTY_INT_PERCENT
+#define PROPERTY_INT_PERCENT(propertyName) aVal=xmlData->Attribute(#propertyName); int propertyName = atoi(aVal?aVal:"100");
+
+
+#undef PROPERTY_BOOL
+#define PROPERTY_BOOL(propertyName) aVal=xmlData->Attribute(#propertyName); bool propertyName = (aVal != NULL) && ((*aVal=='y')||(*aVal=='Y')||(*aVal=='t')||(*aVal=='T')||(*aVal=='e')||(*aVal=='E')||(*aVal=='1'));
+
+
+#undef PROPERTY_POINT
+#define PROPERTY_POINT(propertyName) \
+	aVal=xmlData->Attribute(#propertyName); \
+	aVal2=aVal?strchr(aVal, ':'):NULL; \
+	Point propertyName(atoc(aVal?aVal:"0"), atoc(aVal2?aVal2+1:"0"));
+
+#undef PROPERTY_POINT_PERCENT
+#define PROPERTY_POINT_PERCENT(propertyName) \
+	aVal=xmlData->Attribute(#propertyName); \
+	aVal2=aVal?strchr(aVal, ':'):NULL; \
+	Point propertyName(atoc(aVal?aVal:"100"), atoc(aVal2?aVal2+1:"100"));
+
+#undef PROPERTY_COORD
+#define PROPERTY_COORD(propertyName) aVal=xmlData->Attribute(#propertyName); coord propertyName = atoc(aVal?aVal:"0");
+
+
+#undef PROPERTY_DUR
+#define PROPERTY_DUR(propertyName) aVal=xmlData->Attribute(#propertyName); dur propertyName = atod(aVal?aVal:"0");
+
+
+#undef PROPERTY_RECT
+#define PROPERTY_RECT(propertyName) \
+	Rect propertyName; \
+	{ \
+		coord x, y, w, h; \
+		int nVal = stringToCoordList(xmlData->Attribute(#propertyName), &x, &y, &w, &h); \
+		propertyName = Rect(nVal>0?x:0, nVal>1?y:0, nVal>2?w:0, nVal>3?h:0); \
+	}
+
+
+#undef PROPERTY_OBJ
+#define PROPERTY_OBJ(subObjClass, propertyName) subObjClass* propertyName = NULL; \
+	aVal = xmlData->Attribute(#propertyName); \
+	if(aVal) { propertyName = dynamic_cast<subObjClass*>(state->script()->getobj(aVal)); xassert(propertyName, "Object ID %s not found or is of wrong type.", aVal); } else { \
+	 xmlFrames = xmlData->FirstChildElement(#propertyName); \
+	 if(xmlFrames) { \
+	  aVal = xmlFrames->Attribute("id"); \
+	  if(aVal) { propertyName = dynamic_cast<subObjClass*>(state->script()->getobj(aVal)); xassert(propertyName, "Object ID %s not found or is of wrong type.", aVal); } else { \
+	    propertyName = dynamic_cast<subObjClass*>(createInstance(xmlFrames->FirstChildElement(), xmlFile, owned)); \
+	    if(propertyName) AOEObject::addOwnedObject(owned, propertyName); \
+	  } \
+	 } \
+	}
+
+
+#undef PROPERTY_MOLD
+#define PROPERTY_MOLD(propertyName) ObjectMold* propertyName = NULL; \
+	xmlFrames = xmlData->FirstChildElement(#propertyName); \
+	if(xmlFrames) { \
+		propertyName = dynamic_cast<ObjectMold*>(createMold(xmlFrames->FirstChildElement(), xmlFile)); \
+		AOEObject::addOwnedObject(owned, propertyName); \
+	}
+
+
+#undef PROPERTY_BITMASK
+#define PROPERTY_BITMASK(propertyName, defaultValue) aVal=xmlData->Attribute(#propertyName); int propertyName = atoi(aVal?aVal:#defaultValue);
+
+
+#undef PROPERTY_EFFECTS
+#define PROPERTY_EFFECTS(propertyName) GraphicalEffects _ ## propertyName ## _value = loadEffects(xmlData); \
+	GraphicalEffects* propertyName = & (_ ## propertyName ## _value);
+
+
+#undef PROPERTY_INTERPOLATIONS
+#define PROPERTY_INTERPOLATIONS(propertyName) InterpolationDescriptor* propertyName = loadInterpolations(xmlData);
+
+
+#undef FACTORY_CONSTRUCTOR
+#define FACTORY_CONSTRUCTOR(constructorParams) loadedObject = AOENEW CLASSNAME constructorParams; \
+	SubScriptable* sslo = dynamic_cast<SubScriptable*>(loadedObject); if(sslo) { sslo->initScript(); }
+
+
+#undef COLLECTION
+#define COLLECTION(propertyName, subObjClass, addFunction) xmlFrames = xmlData->FirstChildElement(#propertyName); \
+	if(xmlFrames) { \
+		if( (aVal = xmlFrames->Attribute("src")) ) { \
+			std::vector<ScriptableObject*> subObjs; \
+			subObjs.reserve(64); \
+			loadAllNodes(VFS::openFile(aVal, xmlFile), &subObjs, owned); \
+			for(std::vector<ScriptableObject*>::iterator i=subObjs.begin(); i!=subObjs.end(); i++) { \
+				loadedObject->addFunction(dynamic_cast<subObjClass*>(*i)); \
+			} \
+		} else { \
+			TiXmlElement* xmlFrame = xmlFrames->FirstChildElement(); \
+			while(xmlFrame != NULL) { \
+				ScriptableObject* subObj = Factory::createInstance(xmlFrame, xmlFile, owned); \
+				AOEObject::addOwnedObject(owned, subObj); \
+				if(subObj) loadedObject->addFunction(dynamic_cast<subObjClass*>(subObj)); \
+				xmlFrame = xmlFrame->NextSiblingElement(); \
+			} \
+		} \
+	}
+
+
+#undef MAP
+#define MAP(propertyName, subObjClass, addFunction) xmlFrames = xmlData->FirstChildElement(#propertyName); \
+	if(xmlFrames) { \
+		if( (aVal = xmlFrames->Attribute("src")) ) { \
+			std::map<const char*, ScriptableObject*> subObjs; \
+			loadNodeMap(VFS::openFile(aVal, xmlFile), &subObjs, owned); \
+			for(std::map<const char*, ScriptableObject*>::iterator i=subObjs.begin(); i!=subObjs.end(); i++) { \
+				loadedObject->addFunction(i->first, dynamic_cast<subObjClass*>(i->second)); \
+			} \
+		} else { \
+			TiXmlElement* xmlFrame = xmlFrames->FirstChildElement(); \
+			while(xmlFrame != NULL) { \
+				ScriptableObject* subObj = Factory::createInstance(xmlFrame, xmlFile, owned); \
+				AOEObject::addOwnedObject(owned, subObj); \
+				const char* subObjName = xmlFrame->Attribute("name"); \
+				if(subObj) loadedObject->addFunction(subObjName, dynamic_cast<subObjClass*>(subObj)); \
+				xmlFrame = xmlFrame->NextSiblingElement(); \
+			} \
+		} \
+	}
+
+#undef MOLDMAP
+#define MOLDMAP(propertyName, addFunction) xmlFrames = xmlData->FirstChildElement(#propertyName); \
+	if(xmlFrames) { \
+		if( (aVal = xmlFrames->Attribute("src")) ) { \
+			moldmap molds; \
+			loadNodeMapMolds(VFS::openFile(aVal, xmlFile), &molds); \
+			for(moldmap::iterator i = molds.begin(); i != molds.end(); i++) loadedObject->addFunction(i->first, i->second); \
+		} else { \
+			TiXmlElement* xmlFrame = xmlFrames->FirstChildElement(); \
+			while(xmlFrame != NULL) { \
+				ObjectMold* subObj = Factory::createMold(xmlFrame, xmlFile); \
+				const char* subObjName = xmlFrame->Attribute("name"); assert(subObjName); \
+				if(subObj) loadedObject->addFunction(subObjName, subObj); \
+				xmlFrame = xmlFrame->NextSiblingElement(); \
+			} \
+		} \
+	}
+
+
+#undef INTMAP
+#define INTMAP(propertyName, propertyKeys, addFunction) xmlFrames = xmlData->FirstChildElement(#propertyName); \
+	if(xmlFrames) { \
+		TiXmlElement* xmlFrame = xmlFrames->FirstChildElement(#propertyKeys); \
+		while(xmlFrame != NULL) { \
+			const char* keyName = xmlFrame->Attribute("name"); \
+			const char* keyValue = xmlFrame->Attribute("value"); \
+			assert(keyName); \
+			loadedObject->addFunction(keyName, keyValue?atoi(keyValue):0); \
+			xmlFrame = xmlFrame->NextSiblingElement(#propertyKeys); \
+		} \
+	}
+
+#undef CHARMAP
+#define CHARMAP(propertyName, propertyKeys, addFunction) xmlFrames = xmlData->FirstChildElement(#propertyName); \
+	if(xmlFrames) { \
+		TiXmlElement* xmlFrame = xmlFrames->FirstChildElement(#propertyKeys); \
+		while(xmlFrame != NULL) { \
+			const char* keyName = xmlFrame->Attribute("name"); \
+			const char* keyValue = xmlFrame->Attribute("value"); \
+			assert(keyName); \
+			loadedObject->addFunction(keyName, keyValue); \
+			xmlFrame = xmlFrame->NextSiblingElement(#propertyKeys); \
+		} \
+	}
+
+#undef XMLTAGLIST
+#define XMLTAGLIST(propertyName, addFunction) xmlFrames = xmlData->FirstChildElement(#propertyName); \
+	if(xmlFrames) { \
+		TiXmlElement* xmlFrame = xmlFrames->FirstChildElement(); \
+		while(xmlFrame != NULL) { \
+			loadedObject->addFunction(xmlFrame); \
+			xmlFrame = xmlFrame->NextSiblingElement(); \
+		} \
+	}
+
+
+#undef END_OBJECT_PROPERTIES
+#define END_OBJECT_PROPERTIES \
+	return loadedObject; }
+
+
+#undef REGISTER_FUNCTIONS
+#define REGISTER_FUNCTIONS
+
+#undef REGISTER_SUPERCLASS
+#define REGISTER_SUPERCLASS(superclass)
+
+#undef REGISTER_FUNCTION
+#define REGISTER_FUNCTION(f, p)
+
+#undef REGISTER_BLOCKING_FUNCTION
+#define REGISTER_BLOCKING_FUNCTION(f, p)
+
+#undef REGISTER_STATIC_FUNCTION
+#define REGISTER_STATIC_FUNCTION(f, p)
+
+#undef REGISTER_STATIC_BLOCKING_FUNCTION
+#define REGISTER_STATIC_BLOCKING_FUNCTION(f, p)
+
+#undef END_REGISTER_FUNCTIONS
+#define END_REGISTER_FUNCTIONS
+
+#undef INSTANCE_OF
+#define INSTANCE_OF
+
+#undef SUPERCLASS
+#define SUPERCLASS(name)
+
+#undef END_INSTANCE_OF
+#define END_INSTANCE_OF
+
+#undef SCRIPTABLE_FUNCTION
+#define SCRIPTABLE_FUNCTION(name, fparams)
+
+#undef SCRIPTABLE_FUNCTION_STR
+#define SCRIPTABLE_FUNCTION_STR(name, fparams)
+
+#undef SCRIPTABLE_FUNCTION_VOID
+#define SCRIPTABLE_FUNCTION_VOID(name, fparams)
+
+#undef SCRIPTABLE_FUNCTION_OBJ
+#define SCRIPTABLE_FUNCTION_OBJ(name, fparams)
+
+#undef SCRIPTABLE_FUNCTION_TRANS
+#define SCRIPTABLE_FUNCTION_TRANS(name, fparams)
+
+#undef SCRIPTABLE_GLOBAL_FUNCTION
+#define SCRIPTABLE_GLOBAL_FUNCTION(name, fparams)
+
+#undef SCRIPTABLE_GLOBAL_FUNCTION_STR
+#define SCRIPTABLE_GLOBAL_FUNCTION_STR(name, fparams)
+
+#undef SCRIPTABLE_GLOBAL_FUNCTION_VOID
+#define SCRIPTABLE_GLOBAL_FUNCTION_VOID(name, fparams)
+
+#undef SCRIPTABLE_GLOBAL_FUNCTION_OBJ
+#define SCRIPTABLE_GLOBAL_FUNCTION_OBJ(name, fparams)
+
+#undef SCRIPTABLE_GLOBAL_FUNCTION_TRANS
+#define SCRIPTABLE_GLOBAL_FUNCTION_TRANS(name, fparams)
+
+#undef S_INT
+#define S_INT(v)
+
+#undef S_STR
+#define S_STR(v)
+
+#undef S_PAIR
+#define S_PAIR(v)
+
+#undef S_TRANS_PTR
+#define S_TRANS_PTR(v)
+
+#undef S_BOOL
+#define S_BOOL(v)
+
+#undef S_HTBL
+#define S_HTBL(v)
+
+#undef S_OBJ
+#define S_OBJ(v)
+
+#undef S_OBJ_CLASS
+#define S_OBJ_CLASS(v, c)
+
+#undef S_MOLD
+#define S_MOLD(v)
+
+#undef S_PTR_INT
+#define S_PTR_INT(v)
+
+#undef S_SIGNAL_ID
+#define S_SIGNAL_ID(v)
+
+
+#define HEADER_FILE HEADER_TO_FILENAME(HEADER,xh)
+#include HEADER_FILE
+#undef HEADER_FILE
+#undef HEADER
+

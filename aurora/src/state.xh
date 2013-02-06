@@ -1,0 +1,94 @@
+#define CLASSNAME State
+
+OBJECT_PROPERTIES
+	PROPERTY_BOOL(enabled)
+	PROPERTY_BOOL(exclusive)
+	PROPERTY_BOOL(controlActive)
+	FACTORY_CONSTRUCTOR((aurora_engine, enabled, exclusive, controlActive))
+END_OBJECT_PROPERTIES
+
+SELF_REGISTRATION
+
+REGISTER_FUNCTIONS
+	REGISTER_SUPERCLASS(Collidable)
+	REGISTER_SUPERCLASS(SubScriptable)
+	REGISTER_SUPERCLASS(Audible)
+
+	REGISTER_FUNCTION(setCamSpeed, (newCamSpeed) )
+	REGISTER_FUNCTION(setCameraman, (cameraman) )
+	REGISTER_FUNCTION(loadScript, (filename) )
+	REGISTER_FUNCTION(subState, (script,enabled,exclusive,controlActive) )
+	REGISTER_FUNCTION(takeExclusiveControl, () )
+	REGISTER_BLOCKING_FUNCTION(setCamTarget, (object) )
+	REGISTER_FUNCTION(loadMap, (filename) )
+	REGISTER_FUNCTION(disableController, () )
+	REGISTER_FUNCTION(map, () )
+	REGISTER_FUNCTION(switchMap, (newMap) )
+	REGISTER_FUNCTION(setControlledObject, (newControlledObject, controllerID) )
+	REGISTER_FUNCTION(load, (filename) )
+	REGISTER_FUNCTION(loadXml, (node) )
+	REGISTER_FUNCTION(loadMold, (filename) )
+	REGISTER_FUNCTION(disable, () )
+	REGISTER_FUNCTION(enableController, () )
+	REGISTER_FUNCTION(enable, () )
+	REGISTER_FUNCTION(hud, () )
+	REGISTER_FUNCTION(setHud, (hud) )
+	REGISTER_FUNCTION(releaseExclusiveControl, () )
+	REGISTER_BLOCKING_FUNCTION(setCamTargets, (firstObject,secondObject) )
+	REGISTER_FUNCTION(loadToMap, (filename) )
+	REGISTER_FUNCTION(kill, () )
+	REGISTER_FUNCTION(enableRendering, () )
+	REGISTER_FUNCTION(disableRendering, () )
+	REGISTER_FUNCTION(onSignal, (other,signal,data) )
+#ifdef MOUSE_SUPPORT
+	REGISTER_FUNCTION(setCursor, (newCursor) )
+	REGISTER_FUNCTION(releaseMouse, () )
+	REGISTER_FUNCTION(relativeMouse, () )
+	REGISTER_FUNCTION(absoluteMouse, () )
+	REGISTER_FUNCTION(startDrag, (object) )
+	REGISTER_FUNCTION(stopDrag, () )
+	REGISTER_FUNCTION(cursor, () )
+#endif
+	REGISTER_FUNCTION(setBGM, (filename, loop) )
+END_REGISTER_FUNCTIONS
+
+INSTANCE_OF
+	SUPERCLASS(Collidable)
+END_INSTANCE_OF
+
+SCRIPTABLE_FUNCTION_VOID(setCamSpeed, (S_INT(newCamSpeed)) )
+SCRIPTABLE_FUNCTION_VOID(setCameraman, (S_OBJ_CLASS(cameraman,Cameraman)) )
+SCRIPTABLE_FUNCTION_VOID(loadScript, (S_FILE(filename)) )
+SCRIPTABLE_FUNCTION(subState, (S_FILE(script), S_BOOL(enabled), S_BOOL(exclusive), S_BOOL(controlActive)) )
+SCRIPTABLE_FUNCTION_VOID(takeExclusiveControl, () )
+SCRIPTABLE_FUNCTION_BLOCK(setCamTarget, (S_OBJ_CLASS(object,Renderable)) )
+SCRIPTABLE_FUNCTION(loadMap, (S_FILE(filename)) )
+SCRIPTABLE_FUNCTION_VOID(disableController, () )
+SCRIPTABLE_FUNCTION(map, () )
+SCRIPTABLE_FUNCTION_VOID(switchMap, (S_OBJ_CLASS(newMap,GameMap)) )
+SCRIPTABLE_FUNCTION_VOID(setControlledObject, (S_OBJ_CLASS(newControlledObject,Controllable), S_INT(controllerID)) )
+SCRIPTABLE_FUNCTION(load, (S_FILE(filename)) )
+SCRIPTABLE_FUNCTION(loadXml, (S_XML(node)) )
+SCRIPTABLE_FUNCTION(loadMold, (S_FILE(filename)) )
+SCRIPTABLE_FUNCTION_VOID(disable, () )
+SCRIPTABLE_FUNCTION_VOID(enableController, () )
+SCRIPTABLE_FUNCTION_VOID(enable, () )
+SCRIPTABLE_FUNCTION(hud, () )
+SCRIPTABLE_FUNCTION_VOID(setHud, (S_OBJ_CLASS(hud,Collidable)) )
+SCRIPTABLE_FUNCTION_VOID(releaseExclusiveControl, () )
+SCRIPTABLE_FUNCTION_BLOCK(setCamTargets, (S_OBJ_CLASS(firstObject,Renderable), S_OBJ_CLASS(secondObject,Renderable)) )
+SCRIPTABLE_FUNCTION_OBJ(loadToMap, (S_FILE(filename)) )
+SCRIPTABLE_FUNCTION_VOID(kill, () )
+SCRIPTABLE_FUNCTION_VOID(enableRendering, () )
+SCRIPTABLE_FUNCTION_VOID(disableRendering, () )
+SCRIPTABLE_FUNCTION(onSignal, (S_OBJ_CLASS(other,Collidable), S_INT(signal), S_INT(data)) )
+#ifdef MOUSE_SUPPORT
+SCRIPTABLE_FUNCTION_VOID(setCursor, (S_OBJ_CLASS(newCursor,Collidable)) )
+SCRIPTABLE_FUNCTION(releaseMouse, () )
+SCRIPTABLE_FUNCTION(relativeMouse, () )
+SCRIPTABLE_FUNCTION(absoluteMouse, () )
+SCRIPTABLE_FUNCTION_VOID(startDrag, (S_OBJ_CLASS(object,Renderable)) )
+SCRIPTABLE_FUNCTION_VOID(stopDrag, () )
+SCRIPTABLE_FUNCTION(cursor, () )
+#endif
+SCRIPTABLE_FUNCTION_VOID(setBGM, (S_FILE(filename), S_INT(loop)) )

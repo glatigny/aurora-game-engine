@@ -1,0 +1,36 @@
+#define CLASSNAME Stance
+
+OBJECT_PROPERTIES
+	PROPERTY_POINT(offset)
+	PROPERTY_OBJ(Renderable, animUL) PROPERTY_POINT(transUL)
+	PROPERTY_OBJ(Renderable, animU)	 PROPERTY_POINT(transU)
+	PROPERTY_OBJ(Renderable, animUR) PROPERTY_POINT(transUR)
+	PROPERTY_OBJ(Renderable, animL)  PROPERTY_POINT(transL)
+	PROPERTY_OBJ(Renderable, animC)  PROPERTY_POINT(transC)
+	PROPERTY_OBJ(Renderable, animR)  PROPERTY_POINT(transR)
+	PROPERTY_OBJ(Renderable, animDL) PROPERTY_POINT(transDL)
+	PROPERTY_OBJ(Renderable, animD)  PROPERTY_POINT(transD)
+	PROPERTY_OBJ(Renderable, animDR) PROPERTY_POINT(transDR)
+	PROPERTY_EFFECTS(effects)
+	PROPERTY_INT(layer)
+	FACTORY_CONSTRUCTOR((state,&offset,effects,layer,animUL,&transUL,animU,&transU,animUR,&transUR,animL,&transL,animC,&transC,animR,&transR,animDL,&transDL,animD,&transD,animDR,&transDR))
+END_OBJECT_PROPERTIES
+
+SELF_REGISTRATION
+
+REGISTER_FUNCTIONS
+	REGISTER_SUPERCLASS(Renderable)
+
+	REGISTER_FUNCTION(setDirection, (direction) )
+	REGISTER_FUNCTION(getDirection, () )
+	REGISTER_FUNCTION(getCurrentAnimation, () )
+	
+END_REGISTER_FUNCTIONS
+
+INSTANCE_OF
+	SUPERCLASS(Renderable)
+END_INSTANCE_OF
+
+SCRIPTABLE_FUNCTION_VOID(setDirection, ((ControllerState::Direction)S_INT(direction)) )
+SCRIPTABLE_FUNCTION(getDirection, () )
+SCRIPTABLE_FUNCTION(getCurrentAnimation, () )

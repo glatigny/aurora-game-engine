@@ -1,0 +1,56 @@
+#undef OBJECT_PROPERTIES
+#define OBJECT_PROPERTIES \
+	EXPAND_MACRO(CLASSNAME)::EXPAND_MACRO(CLASSNAME)(const EXPAND_MACRO(CLASSNAME)& src) {
+
+#undef PROPERTY_FILE
+#define PROPERTY_FILE(propertyName) propertyName = AOESTRDUP(src.propertyName);
+
+#undef PROPERTY_CHAR
+#define PROPERTY_CHAR(propertyName) propertyName = src.propertyName;
+
+#undef PROPERTY_XML
+#define PROPERTY_XML(propertyName) propertyName = src.propertyName;
+
+#undef PROPERTY_INT
+#define PROPERTY_INT(propertyName) propertyName = src.propertyName;
+
+#undef PROPERTY_INT_PERCENT
+#define PROPERTY_INT_PERCENT(propertyName) propertyName = src.propertyName;
+
+#undef PROPERTY_BOOL
+#define PROPERTY_BOOL(propertyName) propertyName = src.propertyName;
+
+#undef PROPERTY_POINT
+#define PROPERTY_POINT(propertyName) propertyName = src.propertyName;
+
+#undef PROPERTY_POINT_PERCENT
+#define PROPERTY_POINT_PERCENT(propertyName) propertyName = src.propertyName;
+
+#undef PROPERTY_OBJ
+#define PROPERTY_OBJ(subObjClass, propertyName) propertyName = new subObjClass(*src.propertyName); propertyName->objRef(this);
+
+#undef PROPERTY_OBJ_REF
+#define PROPERTY_OBJ_REF(subObjClass, propertyName) propertyName = new subObjClass(*src.propertyName); propertyName->objRef(this);
+
+#undef PROPERTY_EFFECTS
+#define PROPERTY_EFFECTS(propertyName) /* TODO */
+
+#undef PROPERTY_INTERPOLATIONS
+#define PROPERTY_INTERPOLATIONS(propertyName) /* TODO */
+
+#undef COLLECTION
+#define COLLECTION(propertyName, subObjClass, addFunction) /* TODO */
+
+#undef MAP
+#define MAP(propertyName, propertyKeys, addFunction) /* TODO */
+
+#undef INTMAP
+#define INTMAP(propertyName, propertyKeys, addFunction) /* TODO */
+
+#undef END_OBJECT_PROPERTIES
+#define END_OBJECT_PROPERTIES }
+
+#define HEADER_FILE HEADER_TO_FILENAME(HEADER)
+#include HEADER_FILE
+#undef HEADER_FILE
+#undef HEADER

@@ -1,0 +1,32 @@
+#define CLASSNAME RenderableMenu
+
+OBJECT_PROPERTIES
+	PROPERTY_POINT(offset)
+	PROPERTY_FILE(script)
+	PROPERTY_CHAR(defaultItem)
+	PROPERTY_EFFECTS(effects)
+	FACTORY_CONSTRUCTOR((state, &offset, effects, script, defaultItem))
+	MAP(items, RenderableMenuItem, addItem)
+END_OBJECT_PROPERTIES
+
+SELF_REGISTRATION
+
+REGISTER_FUNCTIONS
+	REGISTER_SUPERCLASS(Menu)
+	REGISTER_SUPERCLASS(Renderable)
+	
+	REGISTER_FUNCTION(replaceItem, (itemName, item) )
+	REGISTER_FUNCTION(changeTo, (destItem) )
+	REGISTER_FUNCTION(setCurrentItem, (itemName) )
+	
+END_REGISTER_FUNCTIONS
+
+INSTANCE_OF
+	SUPERCLASS(Menu)
+	SUPERCLASS(Renderable)
+END_INSTANCE_OF
+
+SCRIPTABLE_FUNCTION_VOID(replaceItem, (S_STR(itemName), S_OBJ_CLASS(item, RenderableMenuItem)) )
+SCRIPTABLE_FUNCTION_VOID(changeTo, (S_STR(destItem)) )
+SCRIPTABLE_FUNCTION_VOID(setCurrentItem, (S_STR(itemName)) )
+

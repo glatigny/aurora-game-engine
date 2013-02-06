@@ -1,0 +1,26 @@
+#define CLASSNAME RenderableMenuItem
+
+OBJECT_PROPERTIES
+	PROPERTY_CHAR(upName)
+	PROPERTY_CHAR(downName)
+	PROPERTY_CHAR(leftName)
+	PROPERTY_CHAR(rightName)
+	PROPERTY_OBJ(Renderable,attachedRenderable)
+	FACTORY_CONSTRUCTOR((upName, downName, leftName, rightName, attachedRenderable))
+END_OBJECT_PROPERTIES
+
+SELF_REGISTRATION
+
+REGISTER_FUNCTIONS
+	REGISTER_SUPERCLASS(MenuItem)
+	REGISTER_FUNCTION(setRenderable, (newAttachedRenderable) )
+	REGISTER_FUNCTION(getRenderable, () )
+END_REGISTER_FUNCTIONS
+
+INSTANCE_OF
+	SUPERCLASS(MenuItem)
+END_INSTANCE_OF
+
+SCRIPTABLE_FUNCTION_VOID(setRenderable, (S_OBJ_CLASS(newAttachedRenderable,Renderable)) )
+SCRIPTABLE_FUNCTION(getRenderable, () )
+

@@ -1,0 +1,7 @@
+#undef CUSTOM_EFFECT
+#define CUSTOM_EFFECT(eName, eValue, eDefault, eTypes, eAccumulate) CustomGraphicalEffectsValue GraphicalEffects::_default_##eName = decodeValueFromEffectString(eDefault);
+
+#define HEADER_FILE HEADER_TO_FILENAME(HEADER,xh)
+#include HEADER_FILE
+#undef HEADER_FILE
+#undef HEADER

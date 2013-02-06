@@ -1,0 +1,12 @@
+#undef SELF_REGISTRATION
+#define SELF_REGISTRATION \
+	c->registeredClasses[c->hash(STRINGIFY(CLASSNAME))].registerClass(STRINGIFY(CLASSNAME)); \
+	{ \
+		CLASSNAME JOIN(CLASSNAME,_instance); \
+		JOIN(CLASSNAME,_instance).registerFunctions(*c); \
+	}
+
+#define HEADER_FILE HEADER_TO_FILENAME(HEADER,xh)
+#include HEADER_FILE
+#undef HEADER_FILE
+#undef HEADER

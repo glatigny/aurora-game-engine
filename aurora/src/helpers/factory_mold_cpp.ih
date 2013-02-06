@@ -1,0 +1,183 @@
+
+#undef OBJECT_PROPERTIES
+#define OBJECT_PROPERTIES ObjectMold* Factory::JOIN(JOIN(load,CLASSNAME),Mold) (TiXmlElement* xmlData, VFS::File* xmlFile) { \
+	TiXmlElement* xmlFrames; \
+	xmlFrames = NULL; \
+	CLASSNAME::Mold* mold = AOENEW CLASSNAME::Mold(state->engine()); \
+	const char* aVal; /* Attribute Value */ \
+	const char* aVal2; /* Attribute Value */ \
+	aVal = 0; /* Eliminate unused variable warnings. Optimized compilation should produce no code */ \
+	aVal2 = 0; /* Eliminate unused variable warnings. Optimized compilation should produce no code */ \
+	mold->sourceFile = xmlFile->copy();
+
+#undef PROPERTY_FILE
+#define PROPERTY_FILE(propertyName) aVal = xmlData->Attribute(#propertyName); mold->propertyName = aVal?VFS::openFile(aVal, xmlFile):NULL;
+
+#undef PROPERTY_CHAR
+#define PROPERTY_CHAR(propertyName) aVal = xmlData->Attribute(#propertyName); mold->propertyName = aVal?AOESTRDUP(aVal):NULL;
+
+
+#undef PROPERTY_XML
+#define PROPERTY_XML(propertyName) mold->propertyName = xmlData->FirstChildElement(#propertyName);
+
+
+#undef PROPERTY_INT
+#define PROPERTY_INT(propertyName) aVal = xmlData->Attribute(#propertyName); mold->propertyName = atoi(aVal?aVal:"0");
+
+
+#undef PROPERTY_INT_PERCENT
+#define PROPERTY_INT_PERCENT(propertyName) aVal = xmlData->Attribute(#propertyName); mold->propertyName = atoi(aVal?aVal:"100");
+
+
+#undef PROPERTY_BOOL
+#define PROPERTY_BOOL(propertyName) aVal = xmlData->Attribute(#propertyName); mold->propertyName = (aVal != NULL) && ((*aVal=='y')||(*aVal=='Y')||(*aVal=='t')||(*aVal=='T')||(*aVal=='e')||(*aVal=='E')||(*aVal=='1'));
+
+
+#undef PROPERTY_POINT
+#define PROPERTY_POINT(propertyName) \
+	aVal=xmlData->Attribute(#propertyName); \
+	aVal2=aVal?strchr(aVal, ':'):NULL; \
+	mold->propertyName = Point(atoc(aVal?aVal:"0"), atoc(aVal2?aVal2+1:"0"));
+
+#undef PROPERTY_POINT_PERCENT
+#define PROPERTY_POINT_PERCENT(propertyName) \
+	aVal=xmlData->Attribute(#propertyName); \
+	aVal2=aVal?strchr(aVal, ':'):NULL; \
+	mold->propertyName = Point(atoc(aVal?aVal:"100"), atoc(aVal2?aVal2+1:"100"));
+
+
+#undef PROPERTY_COORD
+#define PROPERTY_COORD(propertyName) aVal = xmlData->Attribute(#propertyName); mold->propertyName = atoc(aVal?aVal:"0");
+
+
+#undef PROPERTY_DUR
+#define PROPERTY_DUR(propertyName) aVal = xmlData->Attribute(#propertyName); mold->propertyName = atod(aVal?aVal:"0");
+
+
+#undef PROPERTY_RECT
+#define PROPERTY_RECT(propertyName) \
+	{ \
+		coord x, y, w, h; \
+		int nVal = stringToCoordList(xmlData->Attribute(#propertyName), &x, &y, &w, &h); \
+		mold->propertyName = Rect(nVal>0?x:0, nVal>1?y:0, nVal>2?w:0, nVal>3?h:0); \
+	}
+
+
+#undef PROPERTY_OBJ
+#define PROPERTY_OBJ(subObjClass, propertyName) xmlFrames = xmlData->FirstChildElement(#propertyName); if(xmlFrames) { \
+		mold->propertyName ## Mold = createMold(xmlFrames->FirstChildElement(), xmlFile); \
+	} else { \
+		mold->propertyName ## Mold = NULL; \
+	}
+
+
+#undef PROPERTY_MOLD
+#define PROPERTY_MOLD(propertyName) xmlFrames = xmlData->FirstChildElement(#propertyName); if(xmlFrames) { \
+		mold->propertyName = createMold(xmlFrames->FirstChildElement(), xmlFile); \
+	} else { \
+		mold->propertyName = NULL; \
+	}
+
+
+#undef PROPERTY_BITMASK
+#define PROPERTY_BITMASK(propertyName, defaultValue) aVal = xmlData->Attribute(#propertyName); mold->propertyName = atoi(aVal?aVal:#defaultValue);
+
+
+#undef PROPERTY_EFFECTS
+#define PROPERTY_EFFECTS(propertyName) { GraphicalEffects ge = loadEffects(xmlData); mold->propertyName = AOENEW GraphicalEffects(ge);}
+
+
+#undef PROPERTY_INTERPOLATIONS
+//#define PROPERTY_INTERPOLATIONS(propertyName) //TODO:mold->propertyName = loadInterpolations(xmlData);
+#define PROPERTY_INTERPOLATIONS(propertyName) mold->propertyName = NULL;
+
+
+#undef FACTORY_CONSTRUCTOR
+#define FACTORY_CONSTRUCTOR(constructorParams)
+
+
+#undef COLLECTION
+#define COLLECTION(propertyName, subObjClass, addFunction) xmlFrames = xmlData->FirstChildElement(#propertyName); \
+	if(xmlFrames) { \
+		if( (aVal = xmlFrames->Attribute("src")) ) { \
+			loadAllNodeMolds(VFS::openFile(aVal, xmlFile), &(mold->propertyName)); \
+		} else { \
+			TiXmlElement* xmlFrame = xmlFrames->FirstChildElement(); \
+			while(xmlFrame != NULL) { \
+				ObjectMold* subObjMold = Factory::createMold(xmlFrame, xmlFile); \
+				if(mold) { \
+					mold->propertyName.push_back(subObjMold); \
+					xmlFrame = xmlFrame->NextSiblingElement(); \
+				} \
+			} \
+		} \
+	}
+
+
+#undef MAP
+#define MAP(propertyName, subObjClass, addFunction) xmlFrames = xmlData->FirstChildElement(#propertyName); \
+	if(xmlFrames) { \
+		if( (aVal = xmlFrames->Attribute("src")) ) { \
+			loadNodeMapMolds(VFS::openFile(aVal, xmlFile), &(mold->propertyName)); \
+		} else { \
+			TiXmlElement* xmlFrame = xmlFrames->FirstChildElement(); \
+			while(xmlFrame != NULL) { \
+				ObjectMold* subObj = Factory::createMold(xmlFrame, xmlFile); \
+				const char* subObjName = xmlFrame->Attribute("name"); assert(subObjName); \
+				if(subObj) mold->propertyName[AOESTRDUP(subObjName)] = subObj; \
+				xmlFrame = xmlFrame->NextSiblingElement(); \
+			} \
+		} \
+	}
+
+
+#undef MOLDMAP
+#define MOLDMAP(propertyName, addFunction) MAP(propertyName, ObjectMold*, addFunction)
+
+
+#undef INTMAP
+#define INTMAP(propertyName, propertyKeys, addFunction) xmlFrames = xmlData->FirstChildElement(#propertyName); \
+	if(xmlFrames) { \
+		TiXmlElement* xmlFrame = xmlFrames->FirstChildElement(#propertyKeys); \
+		while(xmlFrame != NULL) { \
+			const char* keyName = xmlFrame->Attribute("name"); \
+			const char* keyValue = xmlFrame->Attribute("value"); \
+			assert(keyName); \
+			mold->propertyName[AOESTRDUP(keyName)] = keyValue?atoi(keyValue):0; \
+			xmlFrame = xmlFrame->NextSiblingElement(#propertyKeys); \
+		} \
+	}
+
+#undef CHARMAP
+#define CHARMAP(propertyName, propertyKeys, addFunction) xmlFrames = xmlData->FirstChildElement(#propertyName); \
+	if(xmlFrames) { \
+		TiXmlElement* xmlFrame = xmlFrames->FirstChildElement(#propertyKeys); \
+		while(xmlFrame != NULL) { \
+			const char* keyName = xmlFrame->Attribute("name"); \
+			const char* keyValue = xmlFrame->Attribute("value"); \
+			assert(keyName); \
+			mold->propertyName[AOESTRDUP(keyName)] = AOESTRDUP(keyValue); \
+			xmlFrame = xmlFrame->NextSiblingElement(#propertyKeys); \
+		} \
+	}
+
+#undef XMLTAGLIST
+#define XMLTAGLIST(propertyName, addFunction) xmlFrames = xmlData->FirstChildElement(#propertyName); \
+	if(xmlFrames) { \
+		TiXmlElement* xmlFrame = xmlFrames->FirstChildElement(); \
+		while(xmlFrame != NULL) { \
+			mold->propertyName.push_back(xmlFrame->Clone()->ToElement()); \
+			xmlFrame = xmlFrame->NextSiblingElement(); \
+		} \
+	}
+
+
+#undef END_OBJECT_PROPERTIES
+#define END_OBJECT_PROPERTIES return mold; }
+
+
+#define HEADER_FILE HEADER_TO_FILENAME(HEADER,xh)
+#include HEADER_FILE
+#undef HEADER_FILE
+#undef HEADER
+

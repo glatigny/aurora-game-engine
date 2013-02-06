@@ -1,0 +1,39 @@
+#define CLASSNAME KeyAnimation
+
+OBJECT_PROPERTIES
+	PROPERTY_POINT(offset)
+	PROPERTY_EFFECTS(effects)
+	PROPERTY_INT(layer)
+	PROPERTY_INT(frameDuration)
+	PROPERTY_INT_PERCENT(animSpeed)
+	PROPERTY_BOOL(reversePlayback)
+	PROPERTY_INT(loopType)
+	PROPERTY_INT(mode)
+	PROPERTY_INT(frameUpdateMode)
+	PROPERTY_CHAR(interpolations)
+	FACTORY_CONSTRUCTOR((state, &offset, effects, layer, frameDuration, animSpeed, reversePlayback, loopType, mode, frameUpdateMode, interpolations))
+	COLLECTION(frames, Renderable, addFrame)
+	INTMAP(keys, key, addKey)
+END_OBJECT_PROPERTIES
+
+SELF_REGISTRATION
+
+REGISTER_FUNCTIONS
+	REGISTER_SUPERCLASS(Animation)
+
+	REGISTER_FUNCTION(playTo, (keyName))
+	REGISTER_FUNCTION(getFrameByKey, (keyName))
+	REGISTER_FUNCTION(setPositionByKey, (keyName))
+	REGISTER_FUNCTION(setPlaybackMode, (mode))
+	
+END_REGISTER_FUNCTIONS
+
+INSTANCE_OF
+	SUPERCLASS(Animation)
+END_INSTANCE_OF
+
+SCRIPTABLE_FUNCTION_VOID(playTo, (S_STR(keyName)) )
+SCRIPTABLE_FUNCTION(getFrameByKey, (S_STR(keyName)) )
+SCRIPTABLE_FUNCTION_VOID(setPositionByKey, (S_STR(keyName)) )
+SCRIPTABLE_FUNCTION_VOID(setPlaybackMode, (S_INT(mode)) )
+

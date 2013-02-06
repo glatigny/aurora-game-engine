@@ -1,0 +1,7 @@
+#undef CUSTOM_EFFECT 
+#define CUSTOM_EFFECT(eName, eValue, eDefault, eTypes, eAccumulate) case CONST_NAME_TO_ID(eValue): return _default_##eName;
+
+#define HEADER_FILE HEADER_TO_FILENAME(HEADER,xh)
+#include HEADER_FILE
+#undef HEADER_FILE
+#undef HEADER

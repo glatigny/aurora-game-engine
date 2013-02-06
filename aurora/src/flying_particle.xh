@@ -1,0 +1,43 @@
+#define CLASSNAME FlyingParticle
+
+OBJECT_PROPERTIES
+	PROPERTY_POINT(offset)
+	PROPERTY_INT(layer)
+	PROPERTY_BITMASK(collisionLayers, -1)
+	PROPERTY_OBJ(Collidable, collision)
+	PROPERTY_OBJ(Renderable, frame)
+	PROPERTY_EFFECTS(effects)
+	PROPERTY_INT(direction)
+	PROPERTY_INT(speed)
+	PROPERTY_INT(lifespan)
+	PROPERTY_INT(signalId)
+	PROPERTY_INT(signalValue)
+	PROPERTY_MOLD(spawnWhenDead)
+	FACTORY_CONSTRUCTOR((state, &offset, effects, layer, collisionLayers, collision, frame, direction, speed, lifespan, signalId, signalValue, spawnWhenDead))
+END_OBJECT_PROPERTIES
+
+SELF_REGISTRATION
+
+REGISTER_FUNCTIONS
+	REGISTER_SUPERCLASS(GameObject)
+	REGISTER_FUNCTION(step, (elapsedTime) )
+	REGISTER_FUNCTION(getDirection, () )
+	REGISTER_FUNCTION(setDirection, (direction) )
+	REGISTER_FUNCTION(rotateDirection, (delta) )
+	REGISTER_FUNCTION(getSpeed, () )
+	REGISTER_FUNCTION(setSpeed, (speed) )
+	REGISTER_FUNCTION(setLifespan, (lifespan) )
+END_REGISTER_FUNCTIONS
+
+INSTANCE_OF
+	SUPERCLASS(GameObject)
+END_INSTANCE_OF
+
+SCRIPTABLE_FUNCTION_VOID(step, (S_INT(elapsedTime)) )
+SCRIPTABLE_FUNCTION(getDirection, () )
+SCRIPTABLE_FUNCTION_VOID(setDirection, (S_INT(direction)) )
+SCRIPTABLE_FUNCTION_VOID(rotateDirection, (S_INT(delta)) )
+SCRIPTABLE_FUNCTION(getSpeed, () )
+SCRIPTABLE_FUNCTION_VOID(setSpeed, (S_INT(speed)) )
+SCRIPTABLE_FUNCTION_VOID(setLifespan, (S_INT(lifespan)) )
+

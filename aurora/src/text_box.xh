@@ -1,0 +1,28 @@
+#define CLASSNAME TextBox
+
+OBJECT_PROPERTIES
+	PROPERTY_POINT(offset)
+	PROPERTY_EFFECTS(effects)
+	PROPERTY_INT(layer)
+	PROPERTY_XML(text)
+	PROPERTY_OBJ(Font, defaultFont)
+	PROPERTY_INT(lineHeightMode)
+	PROPERTY_POINT(maxSize)
+	PROPERTY_INT(overflowType)
+	PROPERTY_DUR(delay)
+	PROPERTY_DUR(maxTime)
+	PROPERTY_CHAR(transitionInterpolation)
+	PROPERTY_OBJ(Renderable, textEffects)
+	FACTORY_CONSTRUCTOR((state, &offset, effects, layer, text, defaultFont, lineHeightMode, &maxSize, overflowType, delay, maxTime, transitionInterpolation, textEffects))
+END_OBJECT_PROPERTIES
+
+SELF_REGISTRATION
+
+REGISTER_FUNCTIONS
+	REGISTER_SUPERCLASS(Renderable)
+END_REGISTER_FUNCTIONS
+
+INSTANCE_OF
+	SUPERCLASS(Renderable)
+END_INSTANCE_OF
+

@@ -1,0 +1,28 @@
+#define CLASSNAME ScriptableParticle
+
+OBJECT_PROPERTIES
+	PROPERTY_POINT(offset)
+	PROPERTY_OBJ(Collidable, collision)
+	PROPERTY_OBJ(Renderable, frame)
+	PROPERTY_EFFECTS(effects)
+	PROPERTY_INT(layer)
+	PROPERTY_BITMASK(collisionLayers, -1)
+	PROPERTY_INT(direction)
+	PROPERTY_INT(speed)
+	PROPERTY_INT(lifespan)
+	PROPERTY_FILE(script)
+	FACTORY_CONSTRUCTOR((state, &offset, effects, layer, collisionLayers, collision, frame, direction, speed, lifespan, script))
+END_OBJECT_PROPERTIES
+
+SELF_REGISTRATION
+
+REGISTER_FUNCTIONS
+	REGISTER_SUPERCLASS(FlyingParticle)
+	REGISTER_SUPERCLASS(SubScriptable)
+END_REGISTER_FUNCTIONS
+
+INSTANCE_OF
+	SUPERCLASS(FlyingParticle)
+	SUPERCLASS(SubScriptable)
+END_INSTANCE_OF
+

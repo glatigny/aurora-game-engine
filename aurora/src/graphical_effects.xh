@@ -1,0 +1,46 @@
+/* This file lists custom effects and the way they are managed by the engine.
+ * Custom effects are effects that are not guaranteed to have a uniform
+ * behaviour between plateforms, objects and circumstances.
+ *
+ * These effects are great to add little plateform-specific details to a game.
+ *
+ * Details on the CUSTOM_EFFECT macro :
+ *
+ * CUSTOM_EFFECT(NAME, 'ID', "defaults", TYPES, ACCUMULATION)
+ *
+ * NAME + ID : A fourcc that names the effect. It must be indicated twice, with the second inside single quotes
+ *             (this duplication is because of a technical limitation).
+ *
+ * defaults : The default values in effectString format. The values must be column-delimited and are specific to effects.
+ *
+ * TYPE : The type of the effect values.
+ *
+ * ACCUMULATION : A list of operations to accumulate two effects. These operations are executed by the engine to combine
+ *                the parent's effects with the child's one. This is a space-separated list of operations.
+ *
+ * Available data types :
+ *  NOTHING
+ *  INTEGER
+ *  RGBVALUE
+ *  RGBAVALUE
+ *  RGBA_AMOUNT
+ *  XY
+ *
+ * Available accumulation operations :
+ *  DO_NOTHING
+ *  ADD_INTEGER
+ *  ADD_AMOUNT
+ *  MODULATE_RGB
+ *  MODULATE_ALPHA
+ *  ADD_ALPHA
+ *  ADD_XY
+ *  ADD_X
+ *  ADD_Y
+*/
+
+CUSTOM_EFFECT(NONE, 'NONE', "0", NOTHING, DO_NOTHING)
+CUSTOM_EFFECT(CFIL, 'CFIL', "255:255:255", RGBVALUE, MODULATE_RGB) // Color filter
+CUSTOM_EFFECT(MBLR, 'MBLR', "0:0:0:0:0", RGBA_AMOUNT, ADD_AMOUNT MODULATE_RGB ADD_ALPHA) // Motion blur : amount <= angle, alpha <= amount
+CUSTOM_EFFECT(BLUR, 'BLUR', "0:0", XY, ADD_XY) // Screen-space blur
+CUSTOM_EFFECT(RBLR, 'RBLR', "0:0", XY, ADD_XY) // Screen-space radial blur
+

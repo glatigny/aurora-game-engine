@@ -1,0 +1,35 @@
+#define CLASSNAME Sentence
+
+OBJECT_PROPERTIES
+	PROPERTY_POINT(offset)
+	PROPERTY_EFFECTS(effects)
+	PROPERTY_OBJ(Renderable, background)
+	PROPERTY_OBJ(Renderable, waitingCursor)
+	PROPERTY_OBJ(Renderable, selectingCursor)
+	PROPERTY_FILE(script)
+	FACTORY_CONSTRUCTOR((state, &offset, effects, background, waitingCursor, selectingCursor, script))
+	COLLECTION(texts, Text, addText)
+	MAP(answers, Text, addAnswer)
+END_OBJECT_PROPERTIES
+
+SELF_REGISTRATION
+
+REGISTER_FUNCTIONS
+	REGISTER_SUPERCLASS(Renderable)
+	REGISTER_WAIT_FUNCTION(wait, ())
+	
+	REGISTER_FUNCTION(valid, () )
+	REGISTER_WAIT_FUNCTION(onBeginSentence, () )
+	REGISTER_WAIT_FUNCTION(onEndSentence, () )
+END_REGISTER_FUNCTIONS
+
+INSTANCE_OF
+	SUPERCLASS(Renderable)
+	SUPERCLASS(Controllable)
+END_INSTANCE_OF
+
+SCRIPTABLE_FUNCTION_WAIT(wait, () )
+SCRIPTABLE_FUNCTION_VOID(valid, () )
+SCRIPTABLE_FUNCTION_WAIT(onBeginSentence, () )
+SCRIPTABLE_FUNCTION_WAIT(onEndSentence, () )
+

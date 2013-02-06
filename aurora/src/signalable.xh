@@ -1,0 +1,11 @@
+#define CLASSNAME Signalable
+
+REGISTER_FUNCTIONS
+	REGISTER_FUNCTION(signal, (other,signalId,parameter) )
+END_REGISTER_FUNCTIONS
+
+INSTANCE_OF
+END_INSTANCE_OF
+
+SCRIPTABLE_FUNCTION(signal, (S_OBJ(other),S_SIGNAL_ID(signalId),S_INT(parameter)) )
+

@@ -1,0 +1,33 @@
+#define CLASSNAME Decoration
+
+OBJECT_PROPERTIES
+	PROPERTY_POINT(offset)
+	PROPERTY_EFFECTS(effects)
+	PROPERTY_INT(layer)
+	PROPERTY_BITMASK(collisionLayers, -1)
+	PROPERTY_POINT_PERCENT(parallax)
+	PROPERTY_OBJ(Collidable, collision)
+	FACTORY_CONSTRUCTOR((state, &offset, effects, layer, collisionLayers, &parallax, collision))
+	COLLECTION(graphics, Renderable, addFrame)
+END_OBJECT_PROPERTIES
+
+SELF_REGISTRATION
+
+REGISTER_FUNCTIONS
+	REGISTER_SUPERCLASS(GameObject)
+
+	REGISTER_FUNCTION(setParallax, (newParallax))
+	REGISTER_FUNCTION(getParallax, ())
+	REGISTER_FUNCTION(addFrame, (newFrame))
+	REGISTER_FUNCTION(getFrame, (position))
+
+END_REGISTER_FUNCTIONS
+
+INSTANCE_OF
+	SUPERCLASS(GameObject)
+END_INSTANCE_OF
+
+SCRIPTABLE_FUNCTION_VOID(setParallax, (S_TRANS_PTR(newParallax)) )
+SCRIPTABLE_FUNCTION_TRANS(getParallax, () )
+SCRIPTABLE_FUNCTION_VOID(addFrame, (S_OBJ_CLASS(newFrame,Renderable)) )
+SCRIPTABLE_FUNCTION(getFrame, (S_INT(position)) )

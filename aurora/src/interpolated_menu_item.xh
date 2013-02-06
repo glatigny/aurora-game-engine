@@ -1,0 +1,22 @@
+#define CLASSNAME InterpolatedMenuItem
+
+OBJECT_PROPERTIES
+	PROPERTY_CHAR(upName)
+	PROPERTY_CHAR(downName)
+	PROPERTY_CHAR(leftName)
+	PROPERTY_CHAR(rightName)
+	PROPERTY_OBJ(render,Renderable)
+	PROPERTY_INTERPOLATIONS(interpolationDesc)
+	FACTORY_CONSTRUCTOR((upName, downName, leftName, rightName, render, interpolationDesc))
+END_OBJECT_PROPERTIES
+
+SELF_REGISTRATION
+
+REGISTER_FUNCTIONS
+	REGISTER_SUPERCLASS(RenderableMenuItem)
+END_REGISTER_FUNCTIONS
+
+INSTANCE_OF
+	SUPERCLASS(RenderableMenuItem)
+END_INSTANCE_OF
+

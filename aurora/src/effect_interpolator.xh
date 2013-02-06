@@ -1,0 +1,35 @@
+#define CLASSNAME EffectInterpolator
+
+OBJECT_PROPERTIES
+	PROPERTY_POINT(offset)
+	PROPERTY_EFFECTS(effects)
+	PROPERTY_INT(layer)
+	PROPERTY_INT(frameDuration)
+	PROPERTY_INT_PERCENT(animSpeed)
+	PROPERTY_BOOL(reversePlayback)
+	PROPERTY_INT(loopType)
+	PROPERTY_INT(startTime)
+	PROPERTY_INT(endTime)
+	PROPERTY_CHAR(interpolations)
+	PROPERTY_OBJ(Renderable, interpolatedObject)
+	FACTORY_CONSTRUCTOR((state, &offset, effects, layer, frameDuration, animSpeed, reversePlayback, loopType, startTime, endTime, interpolations, interpolatedObject))
+	COLLECTION(frames, Renderable, addFrame)
+END_OBJECT_PROPERTIES
+
+SELF_REGISTRATION
+
+REGISTER_FUNCTIONS
+	REGISTER_SUPERCLASS(Animation)
+
+	REGISTER_FUNCTION(getInterpolatedObject, () )
+	REGISTER_FUNCTION(setInterpolatedObject, (newInterpolatedObject) )
+
+END_REGISTER_FUNCTIONS
+
+INSTANCE_OF
+	SUPERCLASS(Animation)
+END_INSTANCE_OF
+
+SCRIPTABLE_FUNCTION(getInterpolatedObject, () )
+SCRIPTABLE_FUNCTION_VOID(setInterpolatedObject, (S_OBJ_CLASS(newInterpolatedObject, Renderable)) )
+

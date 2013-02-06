@@ -1,0 +1,28 @@
+#define CLASSNAME Collidable
+
+REGISTER_FUNCTIONS
+	REGISTER_SUPERCLASS(Renderable)
+
+	REGISTER_FUNCTION(signal, (other,signalId,data) )
+	REGISTER_FUNCTION(enableCollisions, () )
+	REGISTER_FUNCTION(disableCollisions, () )
+	REGISTER_FUNCTION(getCollisionsEnabled, () )
+	REGISTER_FUNCTION(setCollisionLayers, (newLayers) )
+	REGISTER_FUNCTION(setCollisionLayer, (layer, newLayerValue) )
+	REGISTER_FUNCTION(getCollisionLayers, () )
+	REGISTER_FUNCTION(getCollisionLayer, (layer) )
+END_REGISTER_FUNCTIONS
+
+INSTANCE_OF
+	SUPERCLASS(Renderable)
+END_INSTANCE_OF
+
+SCRIPTABLE_FUNCTION(signal, (S_OBJ_CLASS(other,Collidable),S_SIGNAL_ID(signalId),S_INT(data)) )
+SCRIPTABLE_FUNCTION_VOID(enableCollisions, () )
+SCRIPTABLE_FUNCTION_VOID(disableCollisions, () )
+SCRIPTABLE_FUNCTION(getCollisionsEnabled, () )
+SCRIPTABLE_FUNCTION_VOID(setCollisionLayers, (S_INT(newLayers)) )
+SCRIPTABLE_FUNCTION_VOID(setCollisionLayer, (S_INT(layer), S_BOOL(newLayerValue)) )
+SCRIPTABLE_FUNCTION(getCollisionLayers, () )
+SCRIPTABLE_FUNCTION(getCollisionLayer, (S_INT(layer)) )
+

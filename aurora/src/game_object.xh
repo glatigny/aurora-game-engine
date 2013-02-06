@@ -1,0 +1,14 @@
+#define CLASSNAME GameObject
+
+REGISTER_FUNCTIONS
+	REGISTER_SUPERCLASS(Collidable)
+
+	REGISTER_FUNCTION(setCollisionHull, (newCollisionHull) )
+
+END_REGISTER_FUNCTIONS
+
+INSTANCE_OF
+	SUPERCLASS(Collidable)
+END_INSTANCE_OF
+
+SCRIPTABLE_FUNCTION_VOID(setCollisionHull, (S_OBJ_CLASS(newCollisionHull,Collidable)) )

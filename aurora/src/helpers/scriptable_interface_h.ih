@@ -1,0 +1,179 @@
+// Fonctions scriptees :
+
+#undef REGISTER_FUNCTIONS
+#define REGISTER_FUNCTIONS \
+	void registerFunctions(Context& c) { \
+
+#undef REGISTER_SUPERCLASS
+#define REGISTER_SUPERCLASS(superclass) superclass::registerFunctions(c);
+
+// Macro pour enregistrer une fonction scriptable dans une variable.
+#undef REGISTER_FUNCTION
+#define REGISTER_FUNCTION(f, p)          c.register_function((char*) &_s_ ## f, getClassName(), #f, #p, FCTFLAG_NORMAL, NULL);
+
+#undef REGISTER_BLOCKING_FUNCTION
+#define REGISTER_BLOCKING_FUNCTION(f, p) c.register_function((char*) &_s_ ## f, getClassName(), #f, #p, FCTFLAG_BLOCKING, (char*) &_s_ ## f ## _block);
+
+#undef REGISTER_WAIT_FUNCTION
+#define REGISTER_WAIT_FUNCTION(f, p) c.register_function((char*) &_s_ ## f, getClassName(), #f, #p, FCTFLAG_BLOCKING, (char*) &_s_ ## f ## _block);
+
+#undef REGISTER_STATIC_FUNCTION
+#define REGISTER_STATIC_FUNCTION(f, p)          c.register_function((char*) &_s_ ## f, getClassName(), #f, #p, FCTFLAG_STATIC, NULL);
+
+#undef REGISTER_STATIC_BLOCKING_FUNCTION
+#define REGISTER_STATIC_BLOCKING_FUNCTION(f, p) c.register_function((char*) &_s_ ## f, getClassName(), #f, #p, FCTFLAG_STATIC | FCTFLAG_BLOCKING, (char*) &_s_ ## f ## _block);
+
+#undef REGISTER_STATIC_WAIT_FUNCTION
+#define REGISTER_STATIC_WAIT_FUNCTION(f, p) c.register_function((char*) &_s_ ## f, getClassName(), #f, #p, FCTFLAG_STATIC | FCTFLAG_BLOCKING, (char*) &_s_ ## f ## _block);
+
+#undef END_REGISTER_FUNCTIONS
+#define END_REGISTER_FUNCTIONS }
+
+// Macro qui definit une fonction comme scriptable
+#undef SCRIPTABLE_FUNCTION
+#define SCRIPTABLE_FUNCTION(name, fparams) static void _s_ ## name(ScriptableObject* me, ScriptVariable& retVal, Context& params) { \
+	retVal.setval( (dynamic_cast<CLASSNAME*>(me))->name fparams ); }
+
+#undef SCRIPTABLE_FUNCTION_WAIT
+#define SCRIPTABLE_FUNCTION_WAIT(name, fparams) \
+	static void _s_ ## name(ScriptableObject* me, ScriptVariable& retVal, Context& params) { retVal.reset(); (dynamic_cast<CLASSNAME*>(me))->name fparams; } \
+	static bool _s_ ## name ## _block(ScriptableObject* me, Context& params) { return (dynamic_cast<CLASSNAME*>(me))->name fparams; }
+
+#undef SCRIPTABLE_FUNCTION_BLOCK
+#define SCRIPTABLE_FUNCTION_BLOCK(name, fparams) \
+	static void _s_ ## name(ScriptableObject* me, ScriptVariable& retVal, Context& params) { retVal.reset(); (dynamic_cast<CLASSNAME*>(me))->name fparams; } \
+	static bool _s_ ## name ## _block(ScriptableObject* me, Context& params) { return (dynamic_cast<CLASSNAME*>(me))->name ## _block fparams; }
+
+#undef SCRIPTABLE_FUNCTION_STR
+#define SCRIPTABLE_FUNCTION_STR(name, fparams) static void _s_ ## name(ScriptableObject* me, ScriptVariable& retVal, Context& params) { \
+	char* ret = ( (dynamic_cast<CLASSNAME*>(me))->name fparams ); retVal.setval(ret); AOEFREE(ret); }
+
+#undef SCRIPTABLE_FUNCTION_VOID
+#define SCRIPTABLE_FUNCTION_VOID(name, fparams) static void _s_ ## name(ScriptableObject* me, ScriptVariable& retVal, Context& params) { \
+	retVal.reset(); (dynamic_cast<CLASSNAME*>(me))->name fparams; }
+
+#undef SCRIPTABLE_FUNCTION_OBJ
+#define SCRIPTABLE_FUNCTION_OBJ(name, fparams) static void _s_ ## name(ScriptableObject* me, ScriptVariable& retVal, Context& params) { \
+	retVal.setval( (ScriptableObject*) ( (dynamic_cast<CLASSNAME*>(me))->name fparams ) ); }
+
+#undef SCRIPTABLE_FUNCTION_TRANS
+#define SCRIPTABLE_FUNCTION_TRANS(name, fparams) static void _s_ ## name(ScriptableObject* me, ScriptVariable& retVal, Context& params) { \
+	Translatable* t = (dynamic_cast<CLASSNAME*>(me))->name fparams ; \
+	retVal.setval( t->getX(), t->getY() ); }
+
+#undef SCRIPTABLE_FUNCTION_RESIZABLE
+#define SCRIPTABLE_FUNCTION_RESIZABLE(name, fparams) static void _s_ ## name(ScriptableObject* me, ScriptVariable& retVal, Context& params) { \
+	Resizable* r = (dynamic_cast<CLASSNAME*>(me))->name fparams ; \
+	retVal.setval( r->getX(), r->getY(), r->getW(), r->getH() ); }
+
+#undef SCRIPTABLE_FUNCTION_FILE
+#define SCRIPTABLE_FUNCTION_FILE(name, fparams) static void _s_ ## name(ScriptableObject* me, ScriptVariable& retVal, Context& params) { \
+	retVal.setval( new VfsFile( me->engine(), (dynamic_cast<CLASSNAME*>(me))->name fparams ) ); }
+
+#undef SCRIPTABLE_GLOBAL_FUNCTION
+#define SCRIPTABLE_GLOBAL_FUNCTION(name, fparams) static void _s_ ## name(ScriptVariable& retVal, Context& params) { \
+	retVal.setval( name fparams ); }
+
+#undef SCRIPTABLE_GLOBAL_FUNCTION_WAIT
+#define SCRIPTABLE_GLOBAL_FUNCTION_WAIT(name, fparams) \
+	static void _s_ ## name(ScriptVariable& retVal, Context& params) { retVal.reset(); name fparams; } \
+	static bool _s_ ## name ## _block(Context& params) { return name fparams; }
+
+#undef SCRIPTABLE_GLOBAL_FUNCTION_BLOCK
+#define SCRIPTABLE_GLOBAL_FUNCTION_BLOCK(name, fparams) \
+	static void _s_ ## name(ScriptVariable& retVal, Context& params) { retVal.reset(); name fparams; } \
+	static bool _s_ ## name ## _block(Context& params) { return name ## _block fparams; }
+
+#undef SCRIPTABLE_GLOBAL_FUNCTION_STR
+#define SCRIPTABLE_GLOBAL_FUNCTION_STR(name, fparams) static void _s_ ## name(ScriptVariable& retVal, Context& params) { \
+	char* ret = ( name fparams ); retVal.setval(ret); AOEFREE(ret); }
+
+#undef SCRIPTABLE_GLOBAL_FUNCTION_VOID
+#define SCRIPTABLE_GLOBAL_FUNCTION_VOID(name, fparams) static void _s_ ## name(ScriptVariable& retVal, Context& params) { \
+	retVal.reset(); name fparams; }
+
+#undef SCRIPTABLE_GLOBAL_FUNCTION_OBJ
+#define SCRIPTABLE_GLOBAL_FUNCTION_OBJ(name, fparams) static void _s_ ## name(ScriptVariable& retVal, Context& params) { \
+	retVal.setval( (ScriptableObject*) name fparams ); }
+
+#undef SCRIPTABLE_GLOBAL_FUNCTION_TRANS
+#define SCRIPTABLE_GLOBAL_FUNCTION_TRANS(name, fparams) static void _s_ ## name(ScriptVariable& retVal, Context& params) { \
+	Translatable* t = name fparams ; \
+	retVal.setval( t->getX(), t->getY() ); }
+
+#undef SCRIPTABLE_GLOBAL_FUNCTION_RESIZABLE
+#define SCRIPTABLE_GLOBAL_FUNCTION_RESIZABLE(name, fparams) static void _s_ ## name(ScriptVariable& retVal, Context& params) { \
+	Resizable* r = name fparams ; \
+	retVal.setval( r->getX(), r->getY(), r->getW(), r->getH() ); }
+
+// Macro instanceOf
+#undef INSTANCE_OF
+#define INSTANCE_OF \
+static bool isInstance(const char* className) { \
+        return ( strcmp(className, STRINGIFY(CLASSNAME)) == 0)
+
+#undef SUPERCLASS
+#define SUPERCLASS(name) || name::isInstance(className)
+
+#undef END_INSTANCE_OF
+#define END_INSTANCE_OF || ScriptableObject::isInstance(className); }
+
+// Parametres de la fonction C++ :
+// Parametre entier
+#undef S_INT
+#define S_INT(v) params.getint(#v)
+// Parametre char*
+#undef S_STR
+#define S_STR(v) params.getstr(#v)
+// Parametre paire
+#undef S_PAIR
+#define S_PAIR(v) params.getPoint(#v)
+// Parametre rectangle
+#undef S_RECT
+#define S_RECT(v) params.getRect(#v)
+// Parametre translatable
+#undef S_TRANS_PTR
+#define S_TRANS_PTR(v) params.getTranslatable(#v)
+// Parametre coordonnee
+#undef S_COORD
+#define S_COORD(v) params.getcoord(#v)
+// Parametre duree
+#undef S_DUR
+#define S_DUR(v) params.getdur(#v)
+// Parametre booleen
+#undef S_BOOL
+#define S_BOOL(v) params.getbool(#v)
+// Parametre Contexte (table de hashage)
+#undef S_HTBL
+#define S_HTBL(v) params.gettable(#v)
+// Parametre pointeur vers objet
+#undef S_OBJ
+#define S_OBJ(v) params.getobj(#v)
+// Parametre pointeur vers objet de classe c
+#undef S_OBJ_CLASS
+#define S_OBJ_CLASS(v, c) (scriptable_object_cast<c*>(params.getobj(#v)))
+// Parametre pointeur vers mold
+#undef S_MOLD
+#define S_MOLD(v) (scriptable_object_cast<ObjectMold*>(params.getobj(#v)))
+// Parametre identifiant de signal
+#undef S_SIGNAL_ID
+#define S_SIGNAL_ID(v) ((SignalId)params.getint(#v))
+// Parametre structure
+#undef S_PACK
+#define S_PACK(v) params.getparams(#v), params.getdata(#v)
+// Parametre fichier
+#undef S_FILE
+#define S_FILE(v) (params.getVar(#v)->getfile(params.getobj("this")->source()))
+// Parametre table
+#undef S_TBL
+#define S_TBL(v) (params.getVar(#v)->gettable())
+// Parametre noeud XML
+#undef S_XML
+#define S_XML(v) (params.getVar(#v)->getxml())
+// Parametre pointeur vers int
+#undef S_PTR_INT
+#define S_PTR_INT(v) params.getintptr(#v)
+
+#define HEADER_FILE HEADER_TO_FILENAME(HEADER,xh)
+#include HEADER_FILE
+#undef HEADER_FILE

@@ -1,0 +1,36 @@
+#define CLASSNAME GameMap
+
+OBJECT_PROPERTIES
+	PROPERTY_POINT(offset)
+	PROPERTY_FILE(script)
+	PROPERTY_EFFECTS(effects)
+	PROPERTY_INT(layer)
+	PROPERTY_BITMASK(collisionLayers, -1)
+	PROPERTY_POINT(topLeft)
+	PROPERTY_POINT(bottomRight)
+	FACTORY_CONSTRUCTOR((state, &offset, effects, layer, collisionLayers, script, &topLeft, &bottomRight))
+	COLLECTION(objects, Collidable, addObject)
+END_OBJECT_PROPERTIES
+
+SELF_REGISTRATION
+
+REGISTER_FUNCTIONS
+	REGISTER_SUPERCLASS(Collidable)
+
+	REGISTER_FUNCTION(script, () )
+	REGISTER_WAIT_FUNCTION(wait, () )
+	REGISTER_FUNCTION(removeObject, (object) )
+	REGISTER_FUNCTION(addObject, (object) )
+	REGISTER_FUNCTION(isInMap, (object) )
+END_REGISTER_FUNCTIONS
+
+INSTANCE_OF
+	SUPERCLASS(Collidable)
+END_INSTANCE_OF
+
+SCRIPTABLE_FUNCTION(script, () )
+SCRIPTABLE_FUNCTION_WAIT(wait, () )
+SCRIPTABLE_FUNCTION_VOID(removeObject, (S_OBJ_CLASS(object,Collidable)) )
+SCRIPTABLE_FUNCTION_VOID(addObject, (S_OBJ_CLASS(object,Collidable)) )
+SCRIPTABLE_FUNCTION(isInMap, (S_OBJ_CLASS(object,Collidable)) )
+

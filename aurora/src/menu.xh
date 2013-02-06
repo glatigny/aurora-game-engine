@@ -1,0 +1,41 @@
+#define CLASSNAME Menu
+
+OBJECT_PROPERTIES
+	PROPERTY_CHAR(defaultItem)
+	PROPERTY_FILE(script)
+	FACTORY_CONSTRUCTOR((state, script, defaultItem))
+	MAP(items, MenuItem, addItem)
+END_OBJECT_PROPERTIES
+
+SELF_REGISTRATION
+
+REGISTER_FUNCTIONS
+	REGISTER_SUPERCLASS(SubScriptable)
+	
+	REGISTER_FUNCTION(replaceItem, (itemName, item) )
+	REGISTER_FUNCTION(removeItem, (itemName) )
+	REGISTER_FUNCTION(onMove, (startItem, destItem, direction) )
+	REGISTER_FUNCTION(changeTo, (destItem) )
+	REGISTER_FUNCTION(setCurrentItem, (itemName) )
+	REGISTER_FUNCTION(getCurrentItem, () )
+	REGISTER_FUNCTION(getLastKeyPressed, () )
+	REGISTER_FUNCTION(ackWait, () )
+	REGISTER_FUNCTION(onKey, (itemName, key) )
+	
+END_REGISTER_FUNCTIONS
+
+INSTANCE_OF
+	SUPERCLASS(SubScriptable)
+	SUPERCLASS(Controllable)
+END_INSTANCE_OF
+
+SCRIPTABLE_FUNCTION_VOID(replaceItem, (S_STR(itemName), S_OBJ_CLASS(item, MenuItem)) )
+SCRIPTABLE_FUNCTION_VOID(removeItem, (S_STR(itemName)) )
+SCRIPTABLE_FUNCTION(onMove, (S_STR(startItem), S_STR(destItem), S_INT(direction)) )
+SCRIPTABLE_FUNCTION_VOID(changeTo, (S_STR(destItem)) )
+SCRIPTABLE_FUNCTION_VOID(setCurrentItem, (S_STR(itemName)) )
+SCRIPTABLE_FUNCTION(getCurrentItem, () )
+SCRIPTABLE_FUNCTION(getLastKeyPressed, () )
+SCRIPTABLE_FUNCTION_VOID(ackWait, () )
+SCRIPTABLE_FUNCTION_VOID(onKey, (S_STR(itemName), S_INT(key)) )
+	

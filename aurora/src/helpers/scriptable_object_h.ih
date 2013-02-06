@@ -1,0 +1,336 @@
+#ifndef SCRIPTABLE_OBJ_HELPER_H
+#define SCRIPTABLE_OBJ_HELPER_H
+#endif
+
+#ifdef SCRIPTABLE_OBJ_HELPER_CPP
+#error This file must be included before class definition.
+#endif
+
+// Membres publics de la classe scriptable.
+// Ce bloc doit etre present dans la classe
+
+// Mold :
+
+#undef OBJECT_PROPERTIES
+#define OBJECT_PROPERTIES class Mold : public ObjectMold { public: \
+	virtual Mold* copy(); \
+	::ScriptableObject* createInstance(State* state, ownedset* owned); \
+	Mold(AuroraEngine* parentEngine) : ObjectMold(parentEngine) {}
+
+
+#undef PROPERTY_FILE
+#define PROPERTY_FILE(propertyName) VFS::File* propertyName;
+
+
+#undef PROPERTY_CHAR
+#define PROPERTY_CHAR(propertyName) char* propertyName;
+
+
+#undef PROPERTY_XML
+#define PROPERTY_XML(propertyName) TiXmlNode* propertyName;
+
+
+#undef PROPERTY_INT
+#define PROPERTY_INT(propertyName) int propertyName;
+
+
+#undef PROPERTY_INT_PERCENT
+#define PROPERTY_INT_PERCENT(propertyName) int propertyName;
+
+
+#undef PROPERTY_BOOL
+#define PROPERTY_BOOL(propertyName) bool propertyName;
+
+
+#undef PROPERTY_POINT
+#define PROPERTY_POINT(propertyName) ::Point propertyName;
+
+
+#undef PROPERTY_POINT_PERCENT
+#define PROPERTY_POINT_PERCENT(propertyName) ::Point propertyName;
+
+
+#undef PROPERTY_COORD
+#define PROPERTY_COORD(propertyName) coord propertyName;
+
+
+#undef PROPERTY_DUR
+#define PROPERTY_DUR(propertyName) dur propertyName;
+
+
+#undef PROPERTY_RECT
+#define PROPERTY_RECT(propertyName) ::Rect propertyName;
+
+
+#undef PROPERTY_OBJ
+#define PROPERTY_OBJ(subObjClass, propertyName) ::ObjectMold* propertyName ## Mold;
+
+
+#undef PROPERTY_MOLD
+#define PROPERTY_MOLD(propertyName) ::ObjectMold* propertyName;
+
+
+#undef PROPERTY_BITMASK
+#define PROPERTY_BITMASK(propertyName, defaultValue) int propertyName;
+
+
+#undef PROPERTY_EFFECTS
+#define PROPERTY_EFFECTS(propertyName) ::GraphicalEffects* propertyName;
+
+
+#undef PROPERTY_INTERPOLATIONS
+#define PROPERTY_INTERPOLATIONS(propertyName) ::InterpolationDescriptor* interpolations;
+
+
+#undef FACTORY_CONSTRUCTOR
+#define FACTORY_CONSTRUCTOR(constructorParams)
+
+
+#undef COLLECTION
+#define COLLECTION(propertyName, subObjClass, addFunction) std::list<ObjectMold*> propertyName;
+
+
+#undef MAP
+#define MAP(propertyName, subObjClass, addFunction) std::map<char*,ObjectMold*> propertyName;
+
+
+#undef MOLDMAP
+#define MOLDMAP(propertyName, addFunction) std::map<char*,ObjectMold*> propertyName;
+
+
+#undef INTMAP
+#define INTMAP(propertyName, subObjClass, addFunction) std::map<char*,int> propertyName;
+
+
+#undef CHARMAP
+#define CHARMAP(propertyName, subObjClass, addFunction) std::map<char*,char*> propertyName;
+
+
+#undef XMLTAGLIST
+#define XMLTAGLIST(propertyName, addFunction) std::list<TiXmlElement*> propertyName;
+
+
+#undef END_OBJECT_PROPERTIES
+#define END_OBJECT_PROPERTIES
+
+// Include the XH to flush declarations for the destructor
+#define HEADER_FILE HEADER_TO_FILENAME(HEADER,xh)
+#include HEADER_FILE
+#undef HEADER_FILE
+
+#undef OBJECT_PROPERTIES
+#define OBJECT_PROPERTIES ~Mold() {
+
+
+#undef PROPERTY_FILE
+#define PROPERTY_FILE(propertyName) if(propertyName) delete propertyName;
+
+
+#undef PROPERTY_CHAR
+#define PROPERTY_CHAR(propertyName) if(propertyName) AOEFREE(propertyName);
+
+
+#undef PROPERTY_XML
+#define PROPERTY_XML(propertyName) if(propertyName) delete propertyName; // XXX:Verify TiXmlNode destruction
+
+
+#undef PROPERTY_INT
+#define PROPERTY_INT(propertyName)
+
+
+#undef PROPERTY_INT_PERCENT
+#define PROPERTY_INT_PERCENT(propertyName)
+
+
+#undef PROPERTY_BOOL
+#define PROPERTY_BOOL(propertyName)
+
+
+#undef PROPERTY_POINT
+#define PROPERTY_POINT(propertyName)
+
+
+#undef PROPERTY_POINT_PERCENT
+#define PROPERTY_POINT_PERCENT(propertyName)
+
+
+#undef PROPERTY_COORD
+#define PROPERTY_COORD(propertyName)
+
+
+#undef PROPERTY_DUR
+#define PROPERTY_DUR(propertyName)
+
+
+#undef PROPERTY_RECT
+#define PROPERTY_RECT(propertyName)
+
+
+#undef PROPERTY_OBJ
+#define PROPERTY_OBJ(subObjClass, propertyName) if(propertyName ## Mold) { delete propertyName ## Mold; }
+
+
+#undef PROPERTY_MOLD
+#define PROPERTY_MOLD(propertyName) if(propertyName) { delete propertyName; }
+
+
+#undef PROPERTY_BITMASK
+#define PROPERTY_BITMASK(propertyName, defaultValue)
+
+
+#undef PROPERTY_EFFECTS
+#define PROPERTY_EFFECTS(propertyName) if(propertyName) delete propertyName;
+
+
+#undef PROPERTY_INTERPOLATIONS
+//TODO: #define PROPERTY_INTERPOLATIONS(propertyName) if(propertyName) delete propertyName;
+#define PROPERTY_INTERPOLATIONS(propertyName)
+
+#undef FACTORY_CONSTRUCTOR
+#define FACTORY_CONSTRUCTOR(constructorParams)
+
+
+#undef COLLECTION
+#define COLLECTION(propertyName, subObjClass, addFunction) for(std::list<ObjectMold*>::iterator i=propertyName.begin(); i!=propertyName.end(); i++) delete(*i);
+
+
+#undef MAP
+#define MAP(propertyName, subObjClass, addFunction) for(std::map<char*,ObjectMold*>::iterator i=propertyName.begin(); i!=propertyName.end(); i++) { AOEFREE(i->first); delete i->second; }
+
+
+#undef MOLDMAP
+#define MOLDMAP(propertyName, addFunction) for(std::map<char*,ObjectMold*>::iterator i=propertyName.begin(); i!=propertyName.end(); i++) { AOEFREE(i->first); delete i->second; }
+
+
+#undef INTMAP
+#define INTMAP(propertyName, subObjClass, addFunction) for(std::map<char*,int>::iterator i=propertyName.begin(); i!=propertyName.end(); i++) { AOEFREE(i->first); }
+
+
+
+#undef CHARMAP
+#define CHARMAP(propertyName, subObjClass, addFunction) for(std::map<char*,char*>::iterator i=propertyName.begin(); i!=propertyName.end(); i++) { AOEFREE(i->first); AOEFREE(i->second); }
+
+
+#undef XMLTAGLIST
+#define XMLTAGLIST(propertyName, addFunction) for(std::list<TiXmlElement*>::iterator i=propertyName.begin(); i!=propertyName.end(); i++) delete(*i);
+
+
+#undef END_OBJECT_PROPERTIES
+#define END_OBJECT_PROPERTIES } };
+
+
+
+// Fonctions scriptees :
+
+#undef REGISTER_FUNCTIONS
+#ifdef KEEP_AOD_SOURCES
+#define REGISTER_FUNCTIONS \
+	/** Returns the name of the class. */ \
+	virtual const char* getClassName(); \
+	/** Returns the size of the object. */ \
+	virtual const size_t sizeOf() { return sizeof(CLASSNAME); } \
+	/** Script wrapper for sizeOf. */ \
+	static void _s_sizeOf(ScriptableObject* me, ScriptVariable& retVal, Context& params); \
+	/** Returns true if the parameter is the name of the class or the name of a superclass. */ \
+	virtual bool isInstance(const char* className); \
+	/** Script wrapper for is_instance. */ \
+	static void _s_isInstance(ScriptableObject* me, ScriptVariable& retVal, Context& params); \
+	/** Script wrapper for get_class_name. */ \
+	static void _s_getClassName(ScriptableObject* me, ScriptVariable& retVal, Context& params); \
+	/** Script wrapper for own. */ \
+	static void _s_own(ScriptableObject* me, ScriptVariable& retVal, Context& params); \
+	/** Script wrapper for source. */ \
+	static void _s_source(ScriptableObject* me, ScriptVariable& retVal, Context& params); \
+	/** Script wrapper for aod. */ \
+	static void _s_aod(ScriptableObject* me, ScriptVariable& retVal, Context& params); \
+	/** Creates a new instance of the class. */ \
+	static CLASSNAME* JOIN(_sNew_,CLASSNAME)(ScriptVariable& retVal, Context& params); \
+	/** Registers all functions of the class in the context. */ \
+	virtual void registerFunctions(Context& c);
+#else
+#define REGISTER_FUNCTIONS \
+	/** Returns the name of the class. */ \
+	virtual const char* getClassName(); \
+	/** Returns the size of the object. */ \
+	virtual const size_t sizeOf() { return sizeof(CLASSNAME); } \
+	/** Script wrapper for sizeOf. */ \
+	static void _s_sizeOf(ScriptableObject* me, ScriptVariable& retVal, Context& params); \
+	/** Returns true if the parameter is the name of the class or the name of a superclass. */ \
+	virtual bool isInstance(const char* className); \
+	/** Script wrapper for is_instance. */ \
+	static void _s_isInstance(ScriptableObject* me, ScriptVariable& retVal, Context& params); \
+	/** Script wrapper for get_class_name. */ \
+	static void _s_getClassName(ScriptableObject* me, ScriptVariable& retVal, Context& params); \
+	/** Script wrapper for own. */ \
+	static void _s_own(ScriptableObject* me, ScriptVariable& retVal, Context& params); \
+	/** Script wrapper for source. */ \
+	static void _s_source(ScriptableObject* me, ScriptVariable& retVal, Context& params); \
+	/** Creates a new instance of the class. */ \
+	static CLASSNAME* JOIN(_sNew_,CLASSNAME)(ScriptVariable& retVal, Context& params); \
+	/** Registers all functions of the class in the context. */ \
+	virtual void registerFunctions(Context& c);
+#endif
+
+#undef REGISTER_SUPERCLASS
+#define REGISTER_SUPERCLASS(superclass)
+
+// Macro qui definit une fonction comme scriptable
+
+#undef SCRIPTABLE_FUNCTION
+#define SCRIPTABLE_FUNCTION(name, fparams) /** Script wrapper for function call. */ static void _s_ ## name(ScriptableObject* me, ScriptVariable& retVal, Context& params);
+
+#undef SCRIPTABLE_FUNCTION_WAIT
+#define SCRIPTABLE_FUNCTION_WAIT(name, fparams) /** Script wrapper for function call. */ \
+static void _s_ ## name(ScriptableObject* me, ScriptVariable& retVal, Context& params); \
+static bool _s_ ## name ## _block(ScriptableObject* me, Context& params);
+
+#undef SCRIPTABLE_FUNCTION_BLOCK
+#define SCRIPTABLE_FUNCTION_BLOCK(name, fparams) /** Script wrapper for function call. */ \
+	static void _s_ ## name(ScriptableObject* me, ScriptVariable& retVal, Context& params); \
+	static bool _s_ ## name ## _block(ScriptableObject* me, Context& params);
+
+#undef SCRIPTABLE_FUNCTION_STR
+#define SCRIPTABLE_FUNCTION_STR(name, fparams) /** Script wrapper for function call. */ static void _s_ ## name(ScriptableObject* me, ScriptVariable& retVal, Context& params);
+
+#undef SCRIPTABLE_FUNCTION_VOID
+#define SCRIPTABLE_FUNCTION_VOID(name, fparams) /** Script wrapper for function call. */ static void _s_ ## name(ScriptableObject* me, ScriptVariable& retVal, Context& params);
+
+#undef SCRIPTABLE_FUNCTION_OBJ
+#define SCRIPTABLE_FUNCTION_OBJ(name, fparams) /** Script wrapper for function call. */ static void _s_ ## name(ScriptableObject* me, ScriptVariable& retVal, Context& params);
+
+#undef SCRIPTABLE_FUNCTION_TRANS
+#define SCRIPTABLE_FUNCTION_TRANS(name, fparams) /** Script wrapper for function call. */ static void _s_ ## name(ScriptableObject* me, ScriptVariable& retVal, Context& params);
+
+#undef SCRIPTABLE_FUNCTION_FILE
+#define SCRIPTABLE_FUNCTION_FILE(name, fparams) /** Script wrapper for function call. */ static void _s_ ## name(ScriptableObject* me, ScriptVariable& retVal, Context& params);
+
+#undef SCRIPTABLE_GLOBAL_FUNCTION
+#define SCRIPTABLE_GLOBAL_FUNCTION(name, fparams) /** Script wrapper for function call. */ static void _s_ ## name(ScriptVariable& retVal, Context& params);
+
+#undef SCRIPTABLE_GLOBAL_FUNCTION_WAIT
+#define SCRIPTABLE_GLOBAL_FUNCTION_WAIT(name, fparams) /** Script wrapper for function call. */ \
+static void _s_ ## name(ScriptVariable& retVal, Context& params); \
+static bool _s_ ## name ## _block(Context& params);
+
+#undef SCRIPTABLE_GLOBAL_FUNCTION_BLOCK
+#define SCRIPTABLE_GLOBAL_FUNCTION_BLOCK(name, fparams) /** Script wrapper for function call. */ \
+	static void _s_ ## name(ScriptVariable& retVal, Context& params); \
+	static bool _s_ ## name ## _block(Context& params);
+
+#undef SCRIPTABLE_GLOBAL_FUNCTION_STR
+#define SCRIPTABLE_GLOBAL_FUNCTION_STR(name, fparams) /** Script wrapper for function call. */ static void _s_ ## name(ScriptVariable& retVal, Context& params);
+
+#undef SCRIPTABLE_GLOBAL_FUNCTION_VOID
+#define SCRIPTABLE_GLOBAL_FUNCTION_VOID(name, fparams) /** Script wrapper for function call. */ static void _s_ ## name(ScriptVariable& retVal, Context& params);
+
+#undef SCRIPTABLE_GLOBAL_FUNCTION_OBJ
+#define SCRIPTABLE_GLOBAL_FUNCTION_OBJ(name, fparams) /** Script wrapper for function call. */ static void _s_ ## name(ScriptVariable& retVal, Context& params);
+
+#undef SCRIPTABLE_GLOBAL_FUNCTION_TRANS
+#define SCRIPTABLE_GLOBAL_FUNCTION_TRANS(name, fparams) /** Script wrapper for function call. */ static void _s_ ## name(ScriptVariable& retVal, Context& params);
+
+#define HEADER_FILE HEADER_TO_FILENAME(HEADER,xh)
+#include HEADER_FILE
+#undef HEADER_FILE
+#undef HEADER
+

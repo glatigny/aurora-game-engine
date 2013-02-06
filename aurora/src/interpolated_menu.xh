@@ -1,0 +1,32 @@
+#define CLASSNAME InterpolatedMenu
+
+OBJECT_PROPERTIES
+	PROPERTY_POINT(offset)
+	PROPERTY_FILE(script)
+	PROPERTY_CHAR(defaultItem)
+	PROPERTY_EFFECTS(effects)
+	PROPERTY_INTERPOLATIONS(interpolationDesc)
+	PROPERTY_INT(duration)
+	FACTORY_CONSTRUCTOR((state, &offset, effects, script, defaultItem, interpolationDesc, duration))
+	MAP(items, RenderableMenuItem, addItem)
+END_OBJECT_PROPERTIES
+
+SELF_REGISTRATION
+
+REGISTER_FUNCTIONS
+	REGISTER_SUPERCLASS(RenderableMenu)
+	
+	REGISTER_FUNCTION(replaceItem, (itemName, item) )
+	REGISTER_FUNCTION(changeTo, (destItem) )
+	REGISTER_FUNCTION(setCurrentItem, (itemName) )
+	
+END_REGISTER_FUNCTIONS
+
+INSTANCE_OF
+	SUPERCLASS(RenderableMenu)
+END_INSTANCE_OF
+
+SCRIPTABLE_FUNCTION_VOID(replaceItem, (S_STR(itemName), S_OBJ_CLASS(item, RenderableMenuItem)) )
+SCRIPTABLE_FUNCTION_VOID(changeTo, (S_STR(destItem)) )
+SCRIPTABLE_FUNCTION_VOID(setCurrentItem, (S_STR(itemName)) )
+

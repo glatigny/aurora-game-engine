@@ -1,0 +1,36 @@
+#define CLASSNAME AnimatedMenu
+
+OBJECT_PROPERTIES
+	PROPERTY_POINT(offset)
+	PROPERTY_INT(layer)
+	PROPERTY_FILE(script)
+	PROPERTY_CHAR(defaultItem)
+	PROPERTY_EFFECTS(effects)
+	PROPERTY_OBJ(KeyAnimation, keyAnimation)
+	FACTORY_CONSTRUCTOR((state, &offset, effects, layer, script, defaultItem, keyAnimation))
+	MAP(items, AnimatedMenuItem, addItem)
+END_OBJECT_PROPERTIES
+
+SELF_REGISTRATION
+
+REGISTER_FUNCTIONS
+	REGISTER_SUPERCLASS(Menu)
+	REGISTER_SUPERCLASS(Renderable)
+	
+	REGISTER_FUNCTION(replaceItem, (itemName, item) )
+	REGISTER_FUNCTION(changeTo, (destItem) )
+	REGISTER_FUNCTION(setCurrentItem, (itemName) )
+	REGISTER_FUNCTION(setAnimation, (newKeyAnimation) )
+	
+END_REGISTER_FUNCTIONS
+
+INSTANCE_OF
+	SUPERCLASS(Menu)
+	SUPERCLASS(Renderable)
+END_INSTANCE_OF
+
+SCRIPTABLE_FUNCTION_VOID(replaceItem, (S_STR(itemName), S_OBJ_CLASS(item, AnimatedMenuItem)) )
+SCRIPTABLE_FUNCTION_VOID(changeTo, (S_STR(destItem)) )
+SCRIPTABLE_FUNCTION_VOID(setCurrentItem, (S_STR(itemName)) )
+SCRIPTABLE_FUNCTION_VOID(setAnimation, (S_OBJ_CLASS(newKeyAnimation,KeyAnimation)) )
+

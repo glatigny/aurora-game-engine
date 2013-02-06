@@ -1,0 +1,29 @@
+#define CLASSNAME ScriptTrigger
+
+OBJECT_PROPERTIES
+	PROPERTY_POINT(offset)
+	PROPERTY_EFFECTS(effects)
+	PROPERTY_INT(layer)
+	PROPERTY_BITMASK(collisionLayers, -1)
+	PROPERTY_OBJ(Collidable, collision)
+	PROPERTY_OBJ(Renderable, attachedObject)
+	PROPERTY_FILE(script)
+	FACTORY_CONSTRUCTOR((state, &offset, effects, layer, collisionLayers, collision, script, attachedObject))
+END_OBJECT_PROPERTIES
+
+SELF_REGISTRATION
+
+REGISTER_FUNCTIONS
+	REGISTER_SUPERCLASS(GameObject)
+
+	REGISTER_WAIT_FUNCTION(onHit, (other) )
+	REGISTER_FUNCTION(onSignal, (other,signal,parameter) )
+END_REGISTER_FUNCTIONS
+
+INSTANCE_OF
+	SUPERCLASS(GameObject)
+END_INSTANCE_OF
+
+SCRIPTABLE_FUNCTION_WAIT(onHit, (S_OBJ(other)) )
+SCRIPTABLE_FUNCTION(onSignal, (S_OBJ(other), S_SIGNAL_ID(signal), S_INT(parameter)) )
+
